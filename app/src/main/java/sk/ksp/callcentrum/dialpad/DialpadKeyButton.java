@@ -34,8 +34,6 @@ import android.widget.FrameLayout;
  * enabled.
  */
 public class DialpadKeyButton extends FrameLayout {
-    /** Accessibility manager instance used to check touch exploration state. */
-    private AccessibilityManager mAccessibilityManager;
 
     /** Bounds used to filter HOVER_EXIT events. */
     private Rect mHoverBounds = new Rect();
@@ -52,20 +50,11 @@ public class DialpadKeyButton extends FrameLayout {
 
     public DialpadKeyButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-//        initForAccessibility(context);
     }
 
     public DialpadKeyButton(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-//        initForAccessibility(context);
     }
-
-    /*
-    private void initForAccessibility(Context context) {
-        mAccessibilityManager = (AccessibilityManager) context.getSystemService(
-                Context.ACCESSIBILITY_SERVICE);
-    }
-    /*
 
     @Override
     public void setPressed(boolean pressed) {
@@ -85,58 +74,4 @@ public class DialpadKeyButton extends FrameLayout {
         mHoverBounds.bottom = h - getPaddingBottom();
     }
 
-    /*
-    @Override
-    public boolean performAccessibilityAction(int action, Bundle arguments) {
-        if (action == AccessibilityNodeInfo.ACTION_CLICK) {
-            simulateClickForAccessibility();
-            return true;
-        }
-
-        return super.performAccessibilityAction(action, arguments);
-    }
-    */
-
-    /*
-    @Override
-    public boolean onHoverEvent(MotionEvent event) {
-        // When touch exploration is turned on, lifting a finger while inside
-        // the button's hover target bounds should perform a click action.
-        if (mAccessibilityManager.isEnabled()
-                && mAccessibilityManager.isTouchExplorationEnabled()) {
-            switch (event.getActionMasked()) {
-                case MotionEvent.ACTION_HOVER_ENTER:
-                    // Lift-to-type temporarily disables double-tap activation.
-                    setClickable(false);
-                    break;
-                case MotionEvent.ACTION_HOVER_EXIT:
-                    if (mHoverBounds.contains((int) event.getX(), (int) event.getY())) {
-                        simulateClickForAccessibility();
-                    }
-                    setClickable(true);
-                    break;
-            }
-        }
-
-        return super.onHoverEvent(event);
-    }*/
-
-    /**
-     * When accessibility is on, simulate press and release to preserve the
-     * semantic meaning of performClick(). Required for Braille support.
-     */
-    private void simulateClickForAccessibility() {
-        // Checking the press state prevents double activation.
-        if (isPressed()) {
-            return;
-        }
-
-        setPressed(true);
-
-        // Stay consistent with performClick() by sending the event after
-        // setting the pressed state but before performing the action.
-        sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
-
-        setPressed(false);
-    }
 }
