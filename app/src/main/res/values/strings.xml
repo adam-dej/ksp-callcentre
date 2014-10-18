@@ -57,5 +57,34 @@
     <!--  Do not translate. -->
     <string name="dialpad_pound_letters"></string>
 
+    <string name="search_font_family">sans-serif</string>
+    <!--  String describing the icon used to clear the search field -->
+    <string name="description_clear_search">Clear search</string>
+    <!-- String describing the icon used to start a voice search -->
+    <string name="description_start_voice_search">Start voice search</string>
+    <!-- Content description for the fake action menu button that brings up the call history
+     activity -->
+    <string name="action_menu_call_history_description">Call History</string>
+    <!-- Content description for the button that displays the dialpad
+         [CHAR LIMIT=NONE] -->
+    <string name="action_menu_dialpad_button">dial pad</string>
+    <!-- String describing the Dial ImageButton
+
+     Used by AccessibilityService to announce the purpose of the button.
+    -->
+    <string name="description_dial_button">dial</string>
+
+    <!-- Content description for the fake action menu overflow button.
+     This should be same as the description for the real action menu
+     overflow button available in ActionBar.
+     [CHAR LIMIT=NONE] -->
+    <string name="action_menu_overflow_description" msgid="2295659037509008453">More options</string>
+
+    <!-- Message displayed when there is no application available to handle voice search. [CHAR LIMIT=NONE] -->
+    <string name="voice_search_not_available">Voice search is not available.</string>
+
+    <!-- Hint displayed in dialer search box when there is no query that is currently typed.
+     [CHAR LIMIT=30] -->
+    <string name="dialer_hint_find_contact">Type a name or phone number</string>
 
 </resources>
