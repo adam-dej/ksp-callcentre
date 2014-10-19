@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/tools">
 
     <string name="app_name">CallCentrum</string>
     <string name="hello_world">Hello world!</string>
@@ -86,5 +86,112 @@
     <!-- Hint displayed in dialer search box when there is no query that is currently typed.
      [CHAR LIMIT=30] -->
     <string name="dialer_hint_find_contact">Type a name or phone number</string>
+
+    <!-- Text for the onscreen "End call" button -->
+    <string name="onscreenEndCallText">End</string>
+
+    <!-- Text for the onscreen "Show Dialpad" button -->
+    <string name="onscreenShowDialpadText">Dialpad</string>
+
+    <!-- Text for the onscreen "Audio" button that lets you switch
+     between speaker / bluetooth / earpiece [CHAR LIMIT=10] -->
+    <string name="onscreenAudioText">Audio</string>
+
+    <!-- Text for the onscreen "Mute" button -->
+    <string name="onscreenMuteText">Mute</string>
+
+    <!-- Text for the onscreen "Hold" button -->
+    <string name="onscreenHoldText">Hold</string>
+
+    <!-- Text for the onscreen "Swap calls" button -->
+    <string name="onscreenSwapCallsText">Swap</string>
+
+    <!-- Text for the onscreen "Add call" button -->
+    <string name="onscreenAddCallText">Add call</string>
+
+    <!-- Text for the onscreen "Merge calls" button -->
+    <string name="onscreenMergeCallsText">Merge calls</string>
+
+    <!-- Use this as a default to describe the contact photo; currently for screen readers through accessibility. -->
+    <string name="contactPhoto">contact photo</string>
+
+    <!-- In-call screen: status label for a call that's on hold -->
+    <string name="onHold">On hold</string>
+
+    <!-- In-call screen: status label displayed briefly after a call ends -->
+    <string name="card_title_call_ended">Call ended</string>
+
+    <!-- In-call screen: status label for call that's on hold -->
+    <string name="card_title_on_hold">On hold</string>
+
+    <!-- In-call screen: status label for a call in the "dialing" state -->
+    <string name="card_title_dialing">Dialing</string>
+
+    <!-- In-call screen: status label for an incoming call -->
+    <string name="card_title_incoming_call">Incoming call</string>
+
+    <!-- In-call screen: status label for a call that's in the process of hanging up -->
+    <string name="card_title_hanging_up">Hanging up</string>
+
+    <!-- In-call screen: status label for a re-dialing call -->
+    <string name="card_title_redialing">Retrying</string>
+
+    <!-- Title displayed in the overlay when a call is placed using a 3rd party provider.
+     [CHAR LIMIT=40] -->
+    <string name="calling_via_template">Calling via <xliff:g id="provider_name">%s</xliff:g></string>
+
+    <!-- In-call screen: status label for a conference call -->
+    <string name="confCall">Conference call</string>
+
+    <!-- In-call screen: status label for a call that's in CDMA flash mode -->
+    <string name="card_title_in_call">In call</string>
+
+    <!-- In-call screen: call failure reason (busy) -->
+    <string name="callFailed_userBusy">Line busy</string>
+    <!-- In-call screen: call failure reason (network congestion) -->
+    <string name="callFailed_congestion">Network busy</string>
+    <!-- In-call screen: call failure reason (client timed out) -->
+    <string name="callFailed_timedOut">No response, timed out</string>
+    <!-- In-call screen: call failure reason (server unreachable) -->
+    <string name="callFailed_server_unreachable">Server unreachable</string>
+    <!-- In-call screen: call failure reason (peer unreachable) -->
+    <string name="callFailed_number_unreachable">Number unreachable</string>
+    <!-- In-call screen: call failure reason (incorrect username or password) -->
+    <string name="callFailed_invalid_credentials">Incorrect username or password</string>
+    <!-- In-call screen: call failure reason (calling from out of network is not allowed) -->
+    <string name="callFailed_out_of_network">Called from out-of-network</string>
+    <!-- In-call screen: call failure reason (server error) -->
+    <string name="callFailed_server_error">Server error. Try again later.</string>
+    <!-- In-call screen: call failure reason (no signal) -->
+    <string name="callFailed_noSignal">No signal</string>
+    <!-- In-call screen: call failure reason (GSM ACM limit exceeded) -->
+    <string name="callFailed_limitExceeded">ACM limit exceeded</string>
+    <!-- In-call screen: call failure reason (radio is off) -->
+    <string name="callFailed_powerOff">Radio off</string>
+    <!-- In-call screen: call failure reason (SIM error) -->
+    <string name="callFailed_simError">No SIM or SIM error</string>
+    <!-- In-call screen: call failure reason (out of service) -->
+    <string name="callFailed_outOfService">Out of service area</string>
+    <!-- In-call screen: call failure reason (call denied because of current FDN setting) -->
+    <string name="callFailed_fdn_only">Outgoing calls are restricted by FDN.</string>
+    <!-- In-call screen: call failure reason (call denied because call barring is on) -->
+    <string name="callFailed_cb_enabled">You can\'t make outgoing calls while call barring is on.</string>
+    <!-- In-call screen: call failure reason (call denied because domain specific access control is on) -->
+    <string name="callFailed_dsac_restricted">All calls are restricted by access control.</string>
+    <!-- In-call screen: call failure reason (Emergency call denied because domain specific access control is on)-->
+    <string name="callFailed_dsac_restricted_emergency">Emergency calls are restricted by access control.</string>
+    <!-- In-call screen: call failure reason (Normal call denied because domain specific access control is on)-->
+    <string name="callFailed_dsac_restricted_normal">Normal calls are restricted by access control.</string>
+    <!-- In-call screen: call failure reason (Dialed number doesn't exist) -->
+    <string name="callFailed_unobtainable_number">Invalid number</string>
+
+    <!-- In-call screen: status label for a conference call -->
+    <string name="card_title_conf_call">Conference call</string>
+
+    <!-- Incoming call screen, name of "unknown" caller -->
+    <string name="unknown">Unknown</string>
+
+    <!-- In-call screen: "call type" indication for a SIP call [CHAR LIMIT=30]  -->
+    <string name="incall_call_type_label_sip">Internet call</string>
 
 </resources>
