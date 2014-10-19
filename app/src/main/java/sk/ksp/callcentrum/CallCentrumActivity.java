@@ -468,14 +468,9 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.overflow_menu: {
-                if (isDialpadShowing()) {
-                    mDialpadOverflowMenu.show();
-                } else {
-                    mOverflowMenu.show();
-                }
+            case R.id.overflow_menu:
+//                mOverflowMenu.show();
                 break;
-            }
             case R.id.dialpad_button:
                 // Reset the boolean flag that tracks whether the dialpad was up because
                 // we were in call. Regardless of whether it was true before, we want to
@@ -487,6 +482,7 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
             case R.id.dial_button:
                 // Dial button was pressed; tell the Dialpad fragment
 //                mDialpadFragment.dialButtonPressed();
+                Log.d(TAG, "Dial button pressed!");
                 break;
             case R.id.call_history_button:
                 // Use explicit CallLogActivity intent instead of ACTION_VIEW +
@@ -574,6 +570,7 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
         }
 
 //        mMenuButton.setOnTouchListener(mDialpadOverflowMenu.getDragToOpenListener());
+        setDialButtonEnabled(true);
     }
 
     public void hideDialpadFragment(boolean animate, boolean clearDialpad) {
@@ -592,6 +589,7 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
         mDialButton.setVisibility(View.GONE);
         mDialpadButton.setVisibility(View.VISIBLE);
 //        mMenuButton.setOnTouchListener(mOverflowMenu.getDragToOpenListener());
+        setDialButtonEnabled(false);
     }
 
     private void prepareSearchView() {
@@ -711,6 +709,7 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
 
         mDialButton = findViewById(R.id.dial_button);
         mDialButton.setOnClickListener(this);
+        mDialButton.setEnabled(true);
 //        mDialButton.setOnLongClickListener(this);
 
         mDialpadButton = findViewById(R.id.dialpad_button);
@@ -1041,7 +1040,7 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
 //    @Override
     public void setDialButtonEnabled(boolean enabled) {
         if (mDialButton != null) {
-            mDialButton.setEnabled(enabled);
+//            mDialButton.setEnabled(enabled);
         }
     }
 
