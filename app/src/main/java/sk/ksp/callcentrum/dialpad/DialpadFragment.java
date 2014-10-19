@@ -71,6 +71,7 @@ import java.util.HashSet;
 
 import sk.ksp.callcentrum.NeededForReflection;
 import sk.ksp.callcentrum.R;
+import sk.ksp.callcentrum.common.HapticFeedback;
 
 /**
  * Fragment that displays a twelve-key phone dialpad.
@@ -80,6 +81,8 @@ public class DialpadFragment extends Fragment
         TextWatcher, DialpadKeyButton.OnPressedListener {
 
     private static final String TAG = DialpadFragment.class.getSimpleName();
+
+    private final HapticFeedback mHaptic = new HapticFeedback();
 
     /**
      * LinearLayout with getter and setter methods for the translationY property using floats,
@@ -214,6 +217,7 @@ public class DialpadFragment extends Fragment
 
     @Override
     public void onCreate(Bundle state) {
+        mHaptic.init(getActivity(), true);
         super.onCreate(state);
 
     }
@@ -345,6 +349,7 @@ public class DialpadFragment extends Fragment
 
     @Override
     public void onResume() {
+        mHaptic.checkSystemSetting();
         super.onResume();
     }
 
@@ -419,8 +424,7 @@ public class DialpadFragment extends Fragment
                 break;
         }
 
-        // TODO haptic vibrate
-//        mHaptic.vibrate();
+        mHaptic.vibrate();
         KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
         mDigits.onKeyDown(keyCode, event);
 
