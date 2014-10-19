@@ -189,7 +189,7 @@ public class DialpadFragment extends Fragment
     private ListView mDialpadChooser;
 
     // determines if we want to playback local DTMF tones.
-    private boolean mDTMFToneEnabled;
+    private boolean mDTMFToneEnabled = true;
 
     private boolean mAdjustTranslationForAnimation = false;
 
@@ -350,6 +350,20 @@ public class DialpadFragment extends Fragment
     @Override
     public void onResume() {
         mHaptic.checkSystemSetting();
+
+        // if the mToneGenerator creation fails, just continue without it.  It is
+        // a local audio signal, and is not as important as the dtmf tone itself.
+        synchronized (mToneGeneratorLock) {
+            if (mToneGenerator == null) {
+                try {
+                    mToneGenerator = new ToneGenerator(DIAL_TONE_STREAM_TYPE, TONE_RELATIVE_VOLUME);
+                } catch (RuntimeException e) {
+                    Log.w(TAG, "Exception caught while creating local tone generator: " + e);
+                    mToneGenerator = null;
+                }
+            }
+        }
+
         super.onResume();
     }
 
