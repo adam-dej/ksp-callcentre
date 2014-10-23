@@ -41,14 +41,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-//import com.android.internal.telephony.Call;
-//import com.android.internal.telephony.CallManager;
-//import com.android.internal.telephony.CallerInfo;
-//import com.android.internal.telephony.CallerInfoAsyncQuery;
-//import com.android.internal.telephony.Connection;
-//import com.android.internal.telephony.Phone;
-//import com.android.internal.telephony.PhoneConstants;
-
 import java.util.List;
 
 import sk.ksp.callcentrum.InCallActivity;
@@ -66,21 +58,6 @@ public class CallCard extends LinearLayout {
 
     private static final int TOKEN_UPDATE_PHOTO_FOR_CALL_STATE = 0;
     private static final int TOKEN_DO_NOTHING = 1;
-
-//    /**
-//     * Used with {@link ContactsAsyncHelper#startObtainPhotoAsync(int, Context, Uri,
-//     * ContactsAsyncHelper.OnImageLoadCompleteListener, Object)}
-//     */
-//    private static class AsyncLoadCookie {
-//        public final ImageView imageView;
-//        public final CallerInfo callerInfo;
-//        public final Call call;
-//        public AsyncLoadCookie(ImageView imageView, CallerInfo callerInfo, Call call) {
-//            this.imageView = imageView;
-//            this.callerInfo = callerInfo;
-//            this.call = call;
-//        }
-//    }
 
     /**
      * Reference to the InCallScreen activity that owns us.  This may be
@@ -182,12 +159,6 @@ public class CallCard extends LinearLayout {
         if (DBG) log("- this = " + this);
         if (DBG) log("- context " + context + ", attrs " + attrs);
 
-//        mApplication = PhoneGlobals.getInstance();
-
-//        mCallTime = new CallTime(this);
-
-        // create a new object to track the state for the photo.
-//        mPhotoTracker = new ContactsAsyncHelper.ImageTracker();
 
         mDensity = getResources().getDisplayMetrics().density;
         if (DBG) log("- Density: " + mDensity);
@@ -196,17 +167,6 @@ public class CallCard extends LinearLayout {
     public void setInCallScreenInstance(InCallActivity inCallScreen) {
         mInCallScreen = inCallScreen;
     }
-
-//    @Override
-//    public void onTickForCallTimeElapsed(long timeElapsed) {
-//        // While a call is in progress, update the elapsed time shown
-//        // onscreen.
-//        updateElapsedTimeWidget(timeElapsed);
-//    }
-
-//    /* package */ void stopTimer() {
-//        mCallTime.cancelTimer();
-//    }
 
     @Override
     protected void onFinishInflate() {
@@ -383,25 +343,6 @@ public class CallCard extends LinearLayout {
 //            displaySecondaryCallStatus(cm, bgCall);
 //        }
     }
-//
-//    /**
-//     * Updates the UI for the state where an incoming call is ringing (or
-//     * call waiting), regardless of whether the phone's already offhook.
-//     */
-//    private void updateRingingCall(CallManager cm) {
-//        if (DBG) log("updateRingingCall()...");
-//
-//        Call ringingCall = cm.getFirstActiveRingingCall();
-//
-//        // Display caller-id info and photo from the incoming call:
-//        displayMainCallStatus(cm, ringingCall);
-//
-//        // And even in the Call Waiting case, *don't* show any info about
-//        // the current ongoing call and/or the current call on hold.
-//        // (Since the caller-id info for the incoming call totally trumps
-//        // any info about the current call(s) in progress.)
-//        displaySecondaryCallStatus(cm, null);
-//    }
 
     /**
      * Updates the UI for the state where an incoming call is just disconnected while we want to
@@ -430,21 +371,6 @@ public class CallCard extends LinearLayout {
         // Just hide it.
         displaySecondaryCallStatus();
     }
-
-//    /**
-//     * Updates the UI for the state where the phone is not in use.
-//     * This is analogous to updateForegroundCall() and updateRingingCall(),
-//     * but for the (uncommon) case where the phone is
-//     * totally idle.  (See comments in updateState() above.)
-//     *
-//     * This puts the callcard into a sane but "blank" state.
-//     */
-//    private void updateNoCall(CallManager cm) {
-//        if (DBG) log("updateNoCall()...");
-//
-//        displayMainCallStatus(cm, null);
-//        displaySecondaryCallStatus(cm, null);
-//    }
 
     /**
      * Updates the main block of caller info on the CallCard
@@ -652,98 +578,6 @@ public class CallCard extends LinearLayout {
 //        // already been set correctly, by either updateDisplayForPerson()
 //        // or updateDisplayForConference().)
     }
-//
-//    /**
-//     * Implemented for CallerInfoAsyncQuery.OnQueryCompleteListener interface.
-//     * refreshes the CallCard data when it called.
-//     */
-//    @Override
-//    public void onQueryComplete(int token, Object cookie, CallerInfo ci) {
-//        if (DBG) log("onQueryComplete: token " + token + ", cookie " + cookie + ", ci " + ci);
-//
-//        if (cookie instanceof Call) {
-//            // grab the call object and update the display for an individual call,
-//            // as well as the successive call to update image via call state.
-//            // If the object is a textview instead, we update it as we need to.
-//            if (DBG) log("callerinfo query complete, updating ui from displayMainCallStatus()");
-//            Call call = (Call) cookie;
-//            Connection conn = null;
-//            int phoneType = call.getPhone().getPhoneType();
-//            if (phoneType == PhoneConstants.PHONE_TYPE_CDMA) {
-//                conn = call.getLatestConnection();
-//            } else if ((phoneType == PhoneConstants.PHONE_TYPE_GSM)
-//                  || (phoneType == PhoneConstants.PHONE_TYPE_SIP)) {
-//                conn = call.getEarliestConnection();
-//            } else {
-//                throw new IllegalStateException("Unexpected phone type: " + phoneType);
-//            }
-//            PhoneUtils.CallerInfoToken cit =
-//                   PhoneUtils.startGetCallerInfo(getContext(), conn, this, null);
-//
-//            int presentation = PhoneConstants.PRESENTATION_ALLOWED;
-//            if (conn != null) presentation = conn.getNumberPresentation();
-//            if (DBG) log("- onQueryComplete: presentation=" + presentation
-//                    + ", contactExists=" + ci.contactExists);
-//
-//            // Depending on whether there was a contact match or not, we want to pass in different
-//            // CallerInfo (for CNAP). Therefore if ci.contactExists then use the ci passed in.
-//            // Otherwise, regenerate the CIT from the Connection and use the CallerInfo from there.
-//            if (ci.contactExists) {
-//                updateDisplayForPerson(ci, PhoneConstants.PRESENTATION_ALLOWED, false, call, conn);
-//            } else {
-//                updateDisplayForPerson(cit.currentInfo, presentation, false, call, conn);
-//            }
-//            updatePhotoForCallState(call);
-//
-//        } else if (cookie instanceof TextView){
-//            if (DBG) log("callerinfo query complete, updating ui from ongoing or onhold");
-//            ((TextView) cookie).setText(PhoneUtils.getCompactNameFromCallerInfo(ci, mContext));
-//        }
-//    }
-
-//    /**
-//     * Implemented for ContactsAsyncHelper.OnImageLoadCompleteListener interface.
-//     * make sure that the call state is reflected after the image is loaded.
-//     */
-//    @Override
-//    public void onImageLoadComplete(int token, Drawable photo, Bitmap photoIcon, Object cookie) {
-//        mHandler.removeMessages(MESSAGE_SHOW_UNKNOWN_PHOTO);
-//        if (mLoadingPersonUri != null) {
-//            // Start sending view notification after the current request being done.
-//            // New image may possibly be available from the next phone calls.
-//            //
-//            // TODO: may be nice to update the image view again once the newer one
-//            // is available on contacts database.
-//            PhoneUtils.sendViewNotificationAsync(mApplication, mLoadingPersonUri);
-//        } else {
-//            // This should not happen while we need some verbose info if it happens..
-//            Log.w(LOG_TAG, "Person Uri isn't available while Image is successfully loaded.");
-//        }
-//        mLoadingPersonUri = null;
-//
-//        AsyncLoadCookie asyncLoadCookie = (AsyncLoadCookie) cookie;
-//        CallerInfo callerInfo = asyncLoadCookie.callerInfo;
-//        ImageView imageView = asyncLoadCookie.imageView;
-//        Call call = asyncLoadCookie.call;
-//
-//        callerInfo.cachedPhoto = photo;
-//        callerInfo.cachedPhotoIcon = photoIcon;
-//        callerInfo.isCachedPhotoCurrent = true;
-//
-//        // Note: previously ContactsAsyncHelper has done this job.
-//        // TODO: We will need fade-in animation. See issue 5236130.
-//        if (photo != null) {
-//            showImage(imageView, photo);
-//        } else if (photoIcon != null) {
-//            showImage(imageView, photoIcon);
-//        } else {
-//            showImage(imageView, R.drawable.picture_unknown);
-//        }
-//
-//        if (token == TOKEN_UPDATE_PHOTO_FOR_CALL_STATE) {
-//            updatePhotoForCallState(call);
-//        }
-//    }
 
     /**
      * Updates the "call state label" and the elapsed time widget based on the
@@ -926,27 +760,6 @@ public class CallCard extends LinearLayout {
 //        }
     }
 
-//    /**
-//     * Updates mElapsedTime based on the given {@link Call} object's information.
-//     *
-//     * @see CallTime#getCallDuration(Call)
-//     * @see Connection#getDurationMillis()
-//     */
-//    /* package */ void updateElapsedTimeWidget(Call call) {
-//        long duration = CallTime.getCallDuration(call);  // msec
-//        updateElapsedTimeWidget(duration / 1000);
-//        // Also see onTickForCallTimeElapsed(), which updates this
-//        // widget once per second while the call is active.
-//    }
-
-//    /**
-//     * Updates mElapsedTime based on the specified number of seconds.
-//     */
-//    private void updateElapsedTimeWidget(long timeElapsed) {
-//        // if (DBG) log("updateElapsedTimeWidget: " + timeElapsed);
-//        mElapsedTime.setText(DateUtils.formatElapsedTime(timeElapsed));
-//    }
-
     /**
      * Updates the "on hold" box in the "other call" info area
      * (ie. the stuff in the secondaryCallInfo block)
@@ -1073,7 +886,6 @@ public class CallCard extends LinearLayout {
     }
 
     private void showSecondaryCallInfo() {
-        // This will call ViewStub#inflate() when needed.
         mSecondaryCallInfo.setVisibility(View.VISIBLE);
         if (mSecondaryCallName == null) {
             mSecondaryCallName = (TextView) findViewById(R.id.secondaryCallName);
@@ -1084,294 +896,7 @@ public class CallCard extends LinearLayout {
         if (mSecondaryCallPhotoDimEffect == null) {
             mSecondaryCallPhotoDimEffect = findViewById(R.id.dim_effect_for_secondary_photo);
             mSecondaryCallPhotoDimEffect.setOnClickListener(mInCallScreen);
-            // Add a custom OnTouchListener to manually shrink the "hit target".
-//            mSecondaryCallPhotoDimEffect.setOnTouchListener(new SmallerHitTargetTouchListener());
         }
-        mInCallScreen.updateButtonStateOutsideInCallTouchUi();
-    }
-
-//    /**
-//     * Method which is expected to be called from
-//     * {@link InCallScreen#updateButtonStateOutsideInCallTouchUi()}.
-//     */
-//    public void setSecondaryCallClickable(boolean clickable) {
-//        if (mSecondaryCallPhotoDimEffect != null) {
-//            mSecondaryCallPhotoDimEffect.setEnabled(clickable);
-//        }
-//    }
-
-//    private String getCallFailedString(Call call) {
-//        Connection c = call.getEarliestConnection();
-//        int resID;
-//
-//        if (c == null) {
-//            if (DBG) log("getCallFailedString: connection is null, using default values.");
-//            // if this connection is null, just assume that the
-//            // default case occurs.
-//            resID = R.string.card_title_call_ended;
-//        } else {
-//
-//            Connection.DisconnectCause cause = c.getDisconnectCause();
-//
-//            // TODO: The card *title* should probably be "Call ended" in all
-//            // cases, but if the DisconnectCause was an error condition we should
-//            // probably also display the specific failure reason somewhere...
-//
-//            switch (cause) {
-//                case BUSY:
-//                    resID = R.string.callFailed_userBusy;
-//                    break;
-//
-//                case CONGESTION:
-//                    resID = R.string.callFailed_congestion;
-//                    break;
-//
-//                case TIMED_OUT:
-//                    resID = R.string.callFailed_timedOut;
-//                    break;
-//
-//                case SERVER_UNREACHABLE:
-//                    resID = R.string.callFailed_server_unreachable;
-//                    break;
-//
-//                case NUMBER_UNREACHABLE:
-//                    resID = R.string.callFailed_number_unreachable;
-//                    break;
-//
-//                case INVALID_CREDENTIALS:
-//                    resID = R.string.callFailed_invalid_credentials;
-//                    break;
-//
-//                case SERVER_ERROR:
-//                    resID = R.string.callFailed_server_error;
-//                    break;
-//
-//                case OUT_OF_NETWORK:
-//                    resID = R.string.callFailed_out_of_network;
-//                    break;
-//
-//                case LOST_SIGNAL:
-//                case CDMA_DROP:
-//                    resID = R.string.callFailed_noSignal;
-//                    break;
-//
-//                case LIMIT_EXCEEDED:
-//                    resID = R.string.callFailed_limitExceeded;
-//                    break;
-//
-//                case POWER_OFF:
-//                    resID = R.string.callFailed_powerOff;
-//                    break;
-//
-//                case ICC_ERROR:
-//                    resID = R.string.callFailed_simError;
-//                    break;
-//
-//                case OUT_OF_SERVICE:
-//                    resID = R.string.callFailed_outOfService;
-//                    break;
-//
-//                case INVALID_NUMBER:
-//                case UNOBTAINABLE_NUMBER:
-//                    resID = R.string.callFailed_unobtainable_number;
-//                    break;
-//
-//                default:
-//                    resID = R.string.card_title_call_ended;
-//                    break;
-//            }
-//        }
-//        return getContext().getString(resID);
-//    }
-
-    /**
-     * Updates the name / photo / number / label fields on the CallCard
-     * based on the specified CallerInfo.
-     *
-     * If the current call is a conference call, use
-     * updateDisplayForConference() instead.
-     */
-    private void updateDisplayForPerson() {
-//        if (DBG) log("updateDisplayForPerson(" + info + ")\npresentation:" +
-//                     presentation + " isTemporary:" + isTemporary);
-//
-//        // inform the state machine that we are displaying a photo.
-//        mPhotoTracker.setPhotoRequest(info);
-//        mPhotoTracker.setPhotoState(ContactsAsyncHelper.ImageTracker.DISPLAY_IMAGE);
-//
-//        // The actual strings we're going to display onscreen:
-//        String displayName;
-//        String displayNumber = null;
-//        String label = null;
-//        Uri personUri = null;
-//        // String socialStatusText = null;
-//        // Drawable socialStatusBadge = null;
-//
-//        // Gather missing info unless the call is generic, in which case we wouldn't use
-//        // the gathered information anyway.
-//        if (info != null && !call.isGeneric()) {
-//
-//            // It appears that there is a small change in behaviour with the
-//            // PhoneUtils' startGetCallerInfo whereby if we query with an
-//            // empty number, we will get a valid CallerInfo object, but with
-//            // fields that are all null, and the isTemporary boolean input
-//            // parameter as true.
-//
-//            // In the past, we would see a NULL callerinfo object, but this
-//            // ends up causing null pointer exceptions elsewhere down the
-//            // line in other cases, so we need to make this fix instead. It
-//            // appears that this was the ONLY call to PhoneUtils
-//            // .getCallerInfo() that relied on a NULL CallerInfo to indicate
-//            // an unknown contact.
-//
-//            // Currently, infi.phoneNumber may actually be a SIP address, and
-//            // if so, it might sometimes include the "sip:" prefix.  That
-//            // prefix isn't really useful to the user, though, so strip it off
-//            // if present.  (For any other URI scheme, though, leave the
-//            // prefix alone.)
-//            // TODO: It would be cleaner for CallerInfo to explicitly support
-//            // SIP addresses instead of overloading the "phoneNumber" field.
-//            // Then we could remove this hack, and instead ask the CallerInfo
-//            // for a "user visible" form of the SIP address.
-//            String number = info.phoneNumber;
-//            if ((number != null) && number.startsWith("sip:")) {
-//                number = number.substring(4);
-//            }
-//
-//            if (TextUtils.isEmpty(info.name)) {
-//                // No valid "name" in the CallerInfo, so fall back to
-//                // something else.
-//                // (Typically, we promote the phone number up to the "name" slot
-//                // onscreen, and possibly display a descriptive string in the
-//                // "number" slot.)
-//                if (TextUtils.isEmpty(number)) {
-//                    // No name *or* number!  Display a generic "unknown" string
-//                    // (or potentially some other default based on the presentation.)
-//                    displayName = PhoneUtils.getPresentationString(getContext(), presentation);
-//                    if (DBG) log("  ==> no name *or* number! displayName = " + displayName);
-//                } else if (presentation != PhoneConstants.PRESENTATION_ALLOWED) {
-//                    // This case should never happen since the network should never send a phone #
-//                    // AND a restricted presentation. However we leave it here in case of weird
-//                    // network behavior
-//                    displayName = PhoneUtils.getPresentationString(getContext(), presentation);
-//                    if (DBG) log("  ==> presentation not allowed! displayName = " + displayName);
-//                } else if (!TextUtils.isEmpty(info.cnapName)) {
-//                    // No name, but we do have a valid CNAP name, so use that.
-//                    displayName = info.cnapName;
-//                    info.name = info.cnapName;
-//                    displayNumber = number;
-//                    if (DBG) log("  ==> cnapName available: displayName '"
-//                                 + displayName + "', displayNumber '" + displayNumber + "'");
-//                } else {
-//                    // No name; all we have is a number.  This is the typical
-//                    // case when an incoming call doesn't match any contact,
-//                    // or if you manually dial an outgoing number using the
-//                    // dialpad.
-//
-//                    // Promote the phone number up to the "name" slot:
-//                    displayName = number;
-//
-//                    // ...and use the "number" slot for a geographical description
-//                    // string if available (but only for incoming calls.)
-//                    if ((conn != null) && (conn.isIncoming())) {
-//                        // TODO (CallerInfoAsyncQuery cleanup): Fix the CallerInfo
-//                        // query to only do the geoDescription lookup in the first
-//                        // place for incoming calls.
-//                        displayNumber = info.geoDescription;  // may be null
-//                    }
-//
-//                    if (DBG) log("  ==>  no name; falling back to number: displayName '"
-//                                 + displayName + "', displayNumber '" + displayNumber + "'");
-//                }
-//            } else {
-//                // We do have a valid "name" in the CallerInfo.  Display that
-//                // in the "name" slot, and the phone number in the "number" slot.
-//                if (presentation != PhoneConstants.PRESENTATION_ALLOWED) {
-//                    // This case should never happen since the network should never send a name
-//                    // AND a restricted presentation. However we leave it here in case of weird
-//                    // network behavior
-//                    displayName = PhoneUtils.getPresentationString(getContext(), presentation);
-//                    if (DBG) log("  ==> valid name, but presentation not allowed!"
-//                                 + " displayName = " + displayName);
-//                } else {
-//                    displayName = info.name;
-//                    displayNumber = number;
-//                    label = info.phoneLabel;
-//                    if (DBG) log("  ==>  name is present in CallerInfo: displayName '"
-//                                 + displayName + "', displayNumber '" + displayNumber + "'");
-//                }
-//            }
-//            personUri = ContentUris.withAppendedId(Contacts.CONTENT_URI, info.person_id);
-//            if (DBG) log("- got personUri: '" + personUri
-//                         + "', based on info.person_id: " + info.person_id);
-//        } else {
-//            displayName = PhoneUtils.getPresentationString(getContext(), presentation);
-//        }
-//
-//        if (call.isGeneric()) {
-//            updateGenericInfoUi();
-//        } else {
-//            updateInfoUi(displayName, displayNumber, label);
-//        }
-//
-//        // Update mPhoto
-//        // if the temporary flag is set, we know we'll be getting another call after
-//        // the CallerInfo has been correctly updated.  So, we can skip the image
-//        // loading until then.
-//
-//        // If the photoResource is filled in for the CallerInfo, (like with the
-//        // Emergency Number case), then we can just set the photo image without
-//        // requesting for an image load. Please refer to CallerInfoAsyncQuery.java
-//        // for cases where CallerInfo.photoResource may be set.  We can also avoid
-//        // the image load step if the image data is cached.
-//        if (isTemporary && (info == null || !info.isCachedPhotoCurrent)) {
-//            mPhoto.setTag(null);
-//            mPhoto.setVisibility(View.INVISIBLE);
-//        } else if (info != null && info.photoResource != 0){
-//            showImage(mPhoto, info.photoResource);
-//        } else if (!showCachedImage(mPhoto, info)) {
-//            if (personUri == null) {
-//                Log.w(LOG_TAG, "personPri is null. Just use Unknown picture.");
-//                showImage(mPhoto, R.drawable.picture_unknown);
-//            } else if (personUri.equals(mLoadingPersonUri)) {
-//                if (DBG) {
-//                    log("The requested Uri (" + personUri + ") is being loaded already."
-//                            + " Ignoret the duplicate load request.");
-//                }
-//            } else {
-//                // Remember which person's photo is being loaded right now so that we won't issue
-//                // unnecessary load request multiple times, which will mess up animation around
-//                // the contact photo.
-//                mLoadingPersonUri = personUri;
-//
-//                // Forget the drawable previously used.
-//                mPhoto.setTag(null);
-//                // Show empty screen for a moment.
-//                mPhoto.setVisibility(View.INVISIBLE);
-//                // Load the image with a callback to update the image state.
-//                // When the load is finished, onImageLoadComplete() will be called.
-//                ContactsAsyncHelper.startObtainPhotoAsync(TOKEN_UPDATE_PHOTO_FOR_CALL_STATE,
-//                        getContext(), personUri, this, new AsyncLoadCookie(mPhoto, info, call));
-//
-//                // If the image load is too slow, we show a default avatar icon afterward.
-//                // If it is fast enough, this message will be canceled on onImageLoadComplete().
-//                mHandler.removeMessages(MESSAGE_SHOW_UNKNOWN_PHOTO);
-//                mHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_UNKNOWN_PHOTO, MESSAGE_DELAY);
-//            }
-//        }
-//
-//        // If the phone call is on hold, show it with darker status.
-//        // Right now we achieve it by overlaying opaque View.
-//        // Note: See also layout file about why so and what is the other possibilities.
-//        if (call.getState() == Call.State.HOLDING) {
-//            AnimationUtils.Fade.show(mPhotoDimEffect);
-//        } else {
-//            AnimationUtils.Fade.hide(mPhotoDimEffect, View.GONE);
-//        }
-//
-//        // Other text fields:
-//        updateCallTypeLabel(call);
-//        // updateSocialStatus(socialStatusText, socialStatusBadge, call);  // Currently unused
     }
 
     /**
@@ -1409,210 +934,6 @@ public class CallCard extends LinearLayout {
         }
     }
 
-    /**
-     * Updates the name / photo / number / label fields
-     * for the special "conference call" state.
-     *
-     * If the current call has only a single connection, use
-     * updateDisplayForPerson() instead.
-     */
-    private void updateDisplayForConference() {
-        if (DBG) log("updateDisplayForConference()...");
-//
-//        int phoneType = call.getPhone().getPhoneType();
-//        if (phoneType == PhoneConstants.PHONE_TYPE_CDMA) {
-//            // This state corresponds to both 3-Way merged call and
-//            // Call Waiting accepted call.
-//            // In this case we display the UI in a "generic" state, with
-//            // the generic "dialing" icon and no caller information,
-//            // because in this state in CDMA the user does not really know
-//            // which caller party he is talking to.
-//            showImage(mPhoto, R.drawable.picture_dialing);
-//            mName.setText(R.string.card_title_in_call);
-//        } else if ((phoneType == PhoneConstants.PHONE_TYPE_GSM)
-//                || (phoneType == PhoneConstants.PHONE_TYPE_SIP)) {
-//            // Normal GSM (or possibly SIP?) conference call.
-//            // Display the "conference call" image as the contact photo.
-//            // TODO: Better visual treatment for contact photos in a
-//            // conference call (see bug 1313252).
-//            showImage(mPhoto, R.drawable.picture_conference);
-//            mName.setText(R.string.card_title_conf_call);
-//        } else {
-//            throw new IllegalStateException("Unexpected phone type: " + phoneType);
-//        }
-//
-//        mName.setVisibility(View.VISIBLE);
-//
-//        // TODO: For a conference call, the "phone number" slot is specced
-//        // to contain a summary of who's on the call, like "Bill Foldes
-//        // and Hazel Nutt" or "Bill Foldes and 2 others".
-//        // But for now, just hide it:
-//        mPhoneNumber.setVisibility(View.GONE);
-//        mLabel.setVisibility(View.GONE);
-//
-//        // Other text fields:
-//        updateCallTypeLabel(call);
-//        // updateSocialStatus(null, null, null);  // socialStatus is never visible in this state
-//
-//        // TODO: for a GSM conference call, since we do actually know who
-//        // you're talking to, consider also showing names / numbers /
-//        // photos of some of the people on the conference here, so you can
-//        // see that info without having to click "Manage conference".  We
-//        // probably have enough space to show info for 2 people, at least.
-//        //
-//        // To do this, our caller would pass us the activeConnections
-//        // list, and we'd call PhoneUtils.getCallerInfo() separately for
-//        // each connection.
-    }
-
-    /**
-     * Updates the CallCard "photo" IFF the specified Call is in a state
-     * that needs a special photo (like "busy" or "dialing".)
-     *
-     * If the current call does not require a special image in the "photo"
-     * slot onscreen, don't do anything, since presumably the photo image
-     * has already been set (to the photo of the person we're talking, or
-     * the generic "picture_unknown" image, or the "conference call"
-     * image.)
-     */
-    private void updatePhotoForCallState() {
-//        if (DBG) log("updatePhotoForCallState(" + call + ")...");
-//        int photoImageResource = 0;
-//
-//        // Check for the (relatively few) telephony states that need a
-//        // special image in the "photo" slot.
-//        Call.State state = call.getState();
-//        switch (state) {
-//            case DISCONNECTED:
-//                // Display the special "busy" photo for BUSY or CONGESTION.
-//                // Otherwise (presumably the normal "call ended" state)
-//                // leave the photo alone.
-//                Connection c = call.getEarliestConnection();
-//                // if the connection is null, we assume the default case,
-//                // otherwise update the image resource normally.
-//                if (c != null) {
-//                    Connection.DisconnectCause cause = c.getDisconnectCause();
-//                    if ((cause == Connection.DisconnectCause.BUSY)
-//                        || (cause == Connection.DisconnectCause.CONGESTION)) {
-//                        photoImageResource = R.drawable.picture_busy;
-//                    }
-//                } else if (DBG) {
-//                    log("updatePhotoForCallState: connection is null, ignoring.");
-//                }
-//
-//                // TODO: add special images for any other DisconnectCauses?
-//                break;
-//
-//            case ALERTING:
-//            case DIALING:
-//            default:
-//                // Leave the photo alone in all other states.
-//                // If this call is an individual call, and the image is currently
-//                // displaying a state, (rather than a photo), we'll need to update
-//                // the image.
-//                // This is for the case where we've been displaying the state and
-//                // now we need to restore the photo.  This can happen because we
-//                // only query the CallerInfo once, and limit the number of times
-//                // the image is loaded. (So a state image may overwrite the photo
-//                // and we would otherwise have no way of displaying the photo when
-//                // the state goes away.)
-//
-//                // if the photoResource field is filled-in in the Connection's
-//                // caller info, then we can just use that instead of requesting
-//                // for a photo load.
-//
-//                // look for the photoResource if it is available.
-//                CallerInfo ci = null;
-//                {
-//                    Connection conn = null;
-//                    int phoneType = call.getPhone().getPhoneType();
-//                    if (phoneType == PhoneConstants.PHONE_TYPE_CDMA) {
-//                        conn = call.getLatestConnection();
-//                    } else if ((phoneType == PhoneConstants.PHONE_TYPE_GSM)
-//                            || (phoneType == PhoneConstants.PHONE_TYPE_SIP)) {
-//                        conn = call.getEarliestConnection();
-//                    } else {
-//                        throw new IllegalStateException("Unexpected phone type: " + phoneType);
-//                    }
-//
-//                    if (conn != null) {
-//                        Object o = conn.getUserData();
-//                        if (o instanceof CallerInfo) {
-//                            ci = (CallerInfo) o;
-//                        } else if (o instanceof PhoneUtils.CallerInfoToken) {
-//                            ci = ((PhoneUtils.CallerInfoToken) o).currentInfo;
-//                        }
-//                    }
-//                }
-//
-//                if (ci != null) {
-//                    photoImageResource = ci.photoResource;
-//                }
-//
-//                // If no photoResource found, check to see if this is a conference call. If
-//                // it is not a conference call:
-//                //   1. Try to show the cached image
-//                //   2. If the image is not cached, check to see if a load request has been
-//                //      made already.
-//                //   3. If the load request has not been made [DISPLAY_DEFAULT], start the
-//                //      request and note that it has started by updating photo state with
-//                //      [DISPLAY_IMAGE].
-//                if (photoImageResource == 0) {
-//                    if (!PhoneUtils.isConferenceCall(call)) {
-//                        if (!showCachedImage(mPhoto, ci) && (mPhotoTracker.getPhotoState() ==
-//                                ContactsAsyncHelper.ImageTracker.DISPLAY_DEFAULT)) {
-//                            Uri photoUri = mPhotoTracker.getPhotoUri();
-//                            if (photoUri == null) {
-//                                Log.w(LOG_TAG, "photoUri became null. Show default avatar icon");
-//                                showImage(mPhoto, R.drawable.picture_unknown);
-//                            } else {
-//                                if (DBG) {
-//                                    log("start asynchronous load inside updatePhotoForCallState()");
-//                                }
-//                                mPhoto.setTag(null);
-//                                // Make it invisible for a moment
-//                                mPhoto.setVisibility(View.INVISIBLE);
-//                                ContactsAsyncHelper.startObtainPhotoAsync(TOKEN_DO_NOTHING,
-//                                        getContext(), photoUri, this,
-//                                        new AsyncLoadCookie(mPhoto, ci, null));
-//                            }
-//                            mPhotoTracker.setPhotoState(
-//                                    ContactsAsyncHelper.ImageTracker.DISPLAY_IMAGE);
-//                        }
-//                    }
-//                } else {
-//                    showImage(mPhoto, photoImageResource);
-//                    mPhotoTracker.setPhotoState(ContactsAsyncHelper.ImageTracker.DISPLAY_IMAGE);
-//                    return;
-//                }
-//                break;
-//        }
-//
-//        if (photoImageResource != 0) {
-//            if (DBG) log("- overrriding photo image: " + photoImageResource);
-//            showImage(mPhoto, photoImageResource);
-//            // Track the image state.
-//            mPhotoTracker.setPhotoState(ContactsAsyncHelper.ImageTracker.DISPLAY_DEFAULT);
-//        }
-    }
-
-//    /**
-//     * Try to display the cached image from the callerinfo object.
-//     *
-//     *  @return true if we were able to find the image in the cache, false otherwise.
-//     */
-//    private static final boolean showCachedImage(ImageView view, CallerInfo ci) {
-//        if ((ci != null) && ci.isCachedPhotoCurrent) {
-//            if (ci.cachedPhoto != null) {
-//                showImage(view, ci.cachedPhoto);
-//            } else {
-//                showImage(view, R.drawable.picture_unknown);
-//            }
-//            return true;
-//        }
-//        return false;
-//    }
-
     /** Helper function to display the resource in the imageview AND ensure its visibility.*/
     private static void showImage(ImageView view, int resource) {
         showImage(view, view.getContext().getResources().getDrawable(resource));
@@ -1637,70 +958,6 @@ public class CallCard extends LinearLayout {
             view.setVisibility(View.VISIBLE);
         }
     }
-
-//    /**
-//     * Returns the special card title used in emergency callback mode (ECM),
-//     * which shows your own phone number.
-//     */
-//    private String getECMCardTitle(Context context, Phone phone) {
-//        String rawNumber = phone.getLine1Number();  // may be null or empty
-//        String formattedNumber;
-//        if (!TextUtils.isEmpty(rawNumber)) {
-//            formattedNumber = PhoneNumberUtils.formatNumber(rawNumber);
-//        } else {
-//            formattedNumber = context.getString(R.string.unknown);
-//        }
-//        return "";
-//    }
-
-//    /**
-//     * Updates the "Call type" label, based on the current foreground call.
-//     * This is a special label and/or branding we display for certain
-//     * kinds of calls.
-//     *
-//     * (So far, this is used only for SIP calls, which get an
-//     * "Internet call" label.  TODO: But eventually, the telephony
-//     * layer might allow each pluggable "provider" to specify a string
-//     * and/or icon to be displayed here.)
-//     */
-//    private void updateCallTypeLabel(Call call) {
-//        int phoneType = (call != null) ? call.getPhone().getPhoneType() :
-//                PhoneConstants.PHONE_TYPE_NONE;
-//        if (phoneType == PhoneConstants.PHONE_TYPE_SIP) {
-//            mCallTypeLabel.setVisibility(View.VISIBLE);
-//            mCallTypeLabel.setText(R.string.incall_call_type_label_sip);
-//            mCallTypeLabel.setTextColor(mTextColorCallTypeSip);
-//            // If desired, we could also display a "badge" next to the label, as follows:
-//            //   mCallTypeLabel.setCompoundDrawablesWithIntrinsicBounds(
-//            //           callTypeSpecificBadge, null, null, null);
-//            //   mCallTypeLabel.setCompoundDrawablePadding((int) (mDensity * 6));
-//        } else {
-//            mCallTypeLabel.setVisibility(View.GONE);
-//        }
-//    }
-
-    /**
-     * Updates the "social status" label with the specified text and
-     * (optional) badge.
-     */
-    /*private void updateSocialStatus(String socialStatusText,
-                                    Drawable socialStatusBadge,
-                                    Call call) {
-        // The socialStatus field is *only* visible while an incoming call
-        // is ringing, never in any other call state.
-        if ((socialStatusText != null)
-                && (call != null)
-                && call.isRinging()
-                && !call.isGeneric()) {
-            mSocialStatus.setVisibility(View.VISIBLE);
-            mSocialStatus.setText(socialStatusText);
-            mSocialStatus.setCompoundDrawablesWithIntrinsicBounds(
-                    socialStatusBadge, null, null, null);
-            mSocialStatus.setCompoundDrawablePadding((int) (mDensity * 6));
-        } else {
-            mSocialStatus.setVisibility(View.GONE);
-        }
-    }*/
 
     /**
      * Hides the top-level UI elements of the call card:  The "main
@@ -1767,18 +1024,11 @@ public class CallCard extends LinearLayout {
     }
 
     public void clear() {
-        // The existing phone design is to keep an instance of call card forever.  Until that
-        // design changes, this method is needed to clear (reset) the call card for the next call
-        // so old data is not shown.
 
         // Other elements can also be cleared here.  Starting with elapsed time to fix a bug.
         mElapsedTime.setVisibility(View.GONE);
         mElapsedTime.setText(null);
     }
-
-
-    // Debugging / testing code
-
     private static void log(String msg) {
         Log.d(LOG_TAG, msg);
     }
