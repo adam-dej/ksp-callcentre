@@ -328,7 +328,7 @@ public class DTMFTwelveKeyDialer implements View.OnTouchListener, View.OnKeyList
         /**
          * Check to see if the keyEvent is dialable.
          */
-        boolean isKeyEventAcceptable (KeyEvent event) {
+        public boolean isKeyEventAcceptable (KeyEvent event) {
             return (ok(getAcceptedChars(), lookup(event)));
         }
 
@@ -970,7 +970,7 @@ public class DTMFTwelveKeyDialer implements View.OnTouchListener, View.OnKeyList
     /**
      * Check to see if the keyEvent is dialable.
      */
-    boolean isKeyEventAcceptable (KeyEvent event) {
+    public boolean isKeyEventAcceptable (KeyEvent event) {
         return (mDialerKeyListener != null && mDialerKeyListener.isKeyEventAcceptable(event));
     }
 

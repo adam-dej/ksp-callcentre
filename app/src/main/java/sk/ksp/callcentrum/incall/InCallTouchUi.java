@@ -149,7 +149,7 @@ public class InCallTouchUi extends FrameLayout
 //        mApp = PhoneGlobals.getInstance();
     }
 
-    void setInCallScreenInstance(InCallActivity inCallScreen) {
+    public void setInCallScreenInstance(InCallActivity inCallScreen) {
         mInCallScreen = inCallScreen;
     }
 
@@ -225,7 +225,8 @@ public class InCallTouchUi extends FrameLayout
      * and not generic call states. The incoming call screen handles more states
      * than Call.State or PhoneConstant.State know about.
      */
-    /* package */ void updateState(CallManager cm) {
+    // TODO wire up custom call manager
+    public void updateState() {
         if (mInCallScreen == null) {
             log("- updateState: mInCallScreen has been destroyed; bailing out...");
             return;

@@ -195,7 +195,7 @@ public class CallCard extends LinearLayout
         if (DBG) log("- Density: " + mDensity);
     }
 
-    /* package */ void setInCallScreenInstance(InCallActivity inCallScreen) {
+    public void setInCallScreenInstance(InCallActivity inCallScreen) {
         mInCallScreen = inCallScreen;
     }
 
@@ -248,7 +248,8 @@ public class CallCard extends LinearLayout
      * Updates the state of all UI elements on the CallCard, based on the
      * current state of the phone.
      */
-    /* package */ void updateState(CallManager cm) {
+    // TODO update state
+    public void updateState() {
         if (DBG) log("updateState(" + cm + ")...");
 
         // Update the onscreen UI based on the current state of the phone.
