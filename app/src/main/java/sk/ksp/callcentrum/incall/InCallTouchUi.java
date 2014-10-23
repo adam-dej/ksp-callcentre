@@ -44,13 +44,13 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.internal.telephony.Call;
-import com.android.internal.telephony.CallManager;
-import com.android.internal.telephony.Phone;
-import com.android.internal.telephony.PhoneConstants;
-import com.android.internal.widget.multiwaveview.GlowPadView;
-import com.android.internal.widget.multiwaveview.GlowPadView.OnTriggerListener;
-import com.android.phone.InCallUiState.InCallScreenMode;
+//import com.android.internal.telephony.Call;
+//import com.android.internal.telephony.CallManager;
+//import com.android.internal.telephony.Phone;
+//import com.android.internal.telephony.PhoneConstants;
+//import com.android.internal.widget.multiwaveview.GlowPadView;
+//import com.android.internal.widget.multiwaveview.GlowPadView.OnTriggerListener;
+//import com.android.phone.InCallUiState.InCallScreenMode;
 
 import sk.ksp.callcentrum.InCallActivity;
 import sk.ksp.callcentrum.R;
@@ -62,8 +62,7 @@ import sk.ksp.callcentrum.R;
  * non-touch-sensitive parts of the in-call UI (i.e. the call card).
  */
 public class InCallTouchUi extends FrameLayout
-        implements View.OnClickListener, View.OnLongClickListener,
-        PopupMenu.OnMenuItemClickListener, PopupMenu.OnDismissListener {
+        implements View.OnClickListener, View.OnLongClickListener {
     private static final String LOG_TAG = "InCallTouchUi";
     private static final boolean DBG = true;
 
@@ -131,7 +130,7 @@ public class InCallTouchUi extends FrameLayout
                 switch (msg.what) {
                     case INCOMING_CALL_WIDGET_PING:
                         if (DBG) log("INCOMING_CALL_WIDGET_PING...");
-                        triggerPing();
+//                        triggerPing();
                         break;
                     default:
                         Log.wtf(LOG_TAG, "mHandler: unexpected message: " + msg);
@@ -325,7 +324,7 @@ public class InCallTouchUi extends FrameLayout
 
         if (showInCallControls) {
             if (DBG) log("- updateState: showing in-call controls...");
-            updateInCallControls(cm);
+            updateInCallControls();
             mInCallControls.setVisibility(View.VISIBLE);
         } else {
             if (DBG) log("- updateState: HIDING in-call controls...");
@@ -347,7 +346,7 @@ public class InCallTouchUi extends FrameLayout
             mApp.notificationMgr.statusBarHelper.enableSystemBarNavigation(false);
         } else {*/
             if (DBG) log("- updateState: HIDING incoming call widget...");
-            hideIncomingCallWidget();
+//            hideIncomingCallWidget();
 
             // The system bar is allowed to work normally in regular
             // in-call states.
@@ -409,8 +408,8 @@ public class InCallTouchUi extends FrameLayout
             case R.id.muteButton:
             case R.id.holdButton:
             case R.id.swapButton:
-            case R.id.cdmaMergeButton:
-            case R.id.manageConferenceButton:
+//            case R.id.cdmaMergeButton:
+//            case R.id.manageConferenceButton:
                 // Clicks on the regular onscreen buttons get forwarded
                 // straight to the InCallScreen.
                 mInCallScreen.handleOnscreenButtonClick(id);
@@ -462,155 +461,150 @@ public class InCallTouchUi extends FrameLayout
      * Updates the enabledness and "checked" state of the buttons on the
      * "inCallControls" panel, based on the current telephony state.
      */
-    private void updateInCallControls(CallManager cm) {
-        int phoneType = cm.getActiveFgCall().getPhone().getPhoneType();
+    private void updateInCallControls() {
+//        int phoneType = cm.getActiveFgCall().getPhone().getPhoneType();
+//
+//        // Note we do NOT need to worry here about cases where the entire
+//        // in-call touch UI is disabled, like during an OTA call or if the
+//        // dtmf dialpad is up.  (That's handled by updateState(), which
+//        // calls okToShowInCallControls().)
+//        //
+//        // If we get here, it *is* OK to show the in-call touch UI, so we
+//        // now need to update the enabledness and/or "checked" state of
+//        // each individual button.
+//        //
+//
+//        // The InCallControlState object tells us the enabledness and/or
+//        // state of the various onscreen buttons:
+//        InCallControlState inCallControlState = mInCallScreen.getUpdatedInCallControlState();
+//
+//        if (DBG) {
+//            log("updateInCallControls()...");
+//            inCallControlState.dumpState();
+//        }
 
-        // Note we do NOT need to worry here about cases where the entire
-        // in-call touch UI is disabled, like during an OTA call or if the
-        // dtmf dialpad is up.  (That's handled by updateState(), which
-        // calls okToShowInCallControls().)
-        //
-        // If we get here, it *is* OK to show the in-call touch UI, so we
-        // now need to update the enabledness and/or "checked" state of
-        // each individual button.
-        //
-
-        // The InCallControlState object tells us the enabledness and/or
-        // state of the various onscreen buttons:
-        InCallControlState inCallControlState = mInCallScreen.getUpdatedInCallControlState();
-
-        if (DBG) {
-            log("updateInCallControls()...");
-            inCallControlState.dumpState();
-        }
-
-        // "Add" / "Merge":
-        // These two buttons occupy the same space onscreen, so at any
-        // given point exactly one of them must be VISIBLE and the other
-        // must be GONE.
-        if (inCallControlState.canAddCall) {
-            mAddButton.setVisibility(View.VISIBLE);
-            mAddButton.setEnabled(true);
-            mMergeButton.setVisibility(View.GONE);
-        } else if (inCallControlState.canMerge) {
-            if (phoneType == PhoneConstants.PHONE_TYPE_CDMA) {
-                // In CDMA "Add" option is always given to the user and the
-                // "Merge" option is provided as a button on the top left corner of the screen,
-                // we always set the mMergeButton to GONE
-                mMergeButton.setVisibility(View.GONE);
-            } else if ((phoneType == PhoneConstants.PHONE_TYPE_GSM)
-                    || (phoneType == PhoneConstants.PHONE_TYPE_SIP)) {
-                mMergeButton.setVisibility(View.VISIBLE);
-                mMergeButton.setEnabled(true);
-                mAddButton.setVisibility(View.GONE);
-            } else {
-                throw new IllegalStateException("Unexpected phone type: " + phoneType);
-            }
-        } else {
-            // Neither "Add" nor "Merge" is available.  (This happens in
-            // some transient states, like while dialing an outgoing call,
-            // and in other rare cases like if you have both lines in use
-            // *and* there are already 5 people on the conference call.)
-            // Since the common case here is "while dialing", we show the
-            // "Add" button in a disabled state so that there won't be any
-            // jarring change in the UI when the call finally connects.
-            mAddButton.setVisibility(View.VISIBLE);
-            mAddButton.setEnabled(false);
-            mMergeButton.setVisibility(View.GONE);
-        }
-        if (inCallControlState.canAddCall && inCallControlState.canMerge) {
-            if ((phoneType == PhoneConstants.PHONE_TYPE_GSM)
-                    || (phoneType == PhoneConstants.PHONE_TYPE_SIP)) {
-                // Uh oh, the InCallControlState thinks that "Add" *and* "Merge"
-                // should both be available right now.  This *should* never
-                // happen with GSM, but if it's possible on any
-                // future devices we may need to re-layout Add and Merge so
-                // they can both be visible at the same time...
-                Log.w(LOG_TAG, "updateInCallControls: Add *and* Merge enabled," +
-                        " but can't show both!");
-            } else if (phoneType == PhoneConstants.PHONE_TYPE_CDMA) {
-                // In CDMA "Add" option is always given to the user and the hence
-                // in this case both "Add" and "Merge" options would be available to user
-                if (DBG) log("updateInCallControls: CDMA: Add and Merge both enabled");
-            } else {
-                throw new IllegalStateException("Unexpected phone type: " + phoneType);
-            }
-        }
+//        // "Add" / "Merge":
+//        // These two buttons occupy the same space onscreen, so at any
+//        // given point exactly one of them must be VISIBLE and the other
+//        // must be GONE.
+//        if (inCallControlState.canAddCall) {
+//            mAddButton.setVisibility(View.VISIBLE);
+//            mAddButton.setEnabled(true);
+//            mMergeButton.setVisibility(View.GONE);
+//        } else if (inCallControlState.canMerge) {
+//            if (phoneType == PhoneConstants.PHONE_TYPE_CDMA) {
+//                // In CDMA "Add" option is always given to the user and the
+//                // "Merge" option is provided as a button on the top left corner of the screen,
+//                // we always set the mMergeButton to GONE
+//                mMergeButton.setVisibility(View.GONE);
+//            } else if ((phoneType == PhoneConstants.PHONE_TYPE_GSM)
+//                    || (phoneType == PhoneConstants.PHONE_TYPE_SIP)) {
+//                mMergeButton.setVisibility(View.VISIBLE);
+//                mMergeButton.setEnabled(true);
+//                mAddButton.setVisibility(View.GONE);
+//            } else {
+//                throw new IllegalStateException("Unexpected phone type: " + phoneType);
+//            }
+//        } else {
+//            // Neither "Add" nor "Merge" is available.  (This happens in
+//            // some transient states, like while dialing an outgoing call,
+//            // and in other rare cases like if you have both lines in use
+//            // *and* there are already 5 people on the conference call.)
+//            // Since the common case here is "while dialing", we show the
+//            // "Add" button in a disabled state so that there won't be any
+//            // jarring change in the UI when the call finally connects.
+//            mAddButton.setVisibility(View.VISIBLE);
+//            mAddButton.setEnabled(false);
+//            mMergeButton.setVisibility(View.GONE);
+//        }
+//        if (inCallControlState.canAddCall && inCallControlState.canMerge) {
+//            if ((phoneType == PhoneConstants.PHONE_TYPE_GSM)
+//                    || (phoneType == PhoneConstants.PHONE_TYPE_SIP)) {
+//                // Uh oh, the InCallControlState thinks that "Add" *and* "Merge"
+//                // should both be available right now.  This *should* never
+//                // happen with GSM, but if it's possible on any
+//                // future devices we may need to re-layout Add and Merge so
+//                // they can both be visible at the same time...
+//                Log.w(LOG_TAG, "updateInCallControls: Add *and* Merge enabled," +
+//                        " but can't show both!");
+//            } else if (phoneType == PhoneConstants.PHONE_TYPE_CDMA) {
+//                // In CDMA "Add" option is always given to the user and the hence
+//                // in this case both "Add" and "Merge" options would be available to user
+//                if (DBG) log("updateInCallControls: CDMA: Add and Merge both enabled");
+//            } else {
+//                throw new IllegalStateException("Unexpected phone type: " + phoneType);
+//            }
+//        }
 
         // "End call"
-        mEndButton.setEnabled(inCallControlState.canEndCall);
+        mEndButton.setEnabled(true);
 
         // "Dialpad": Enabled only when it's OK to use the dialpad in the
         // first place.
-        mDialpadButton.setEnabled(inCallControlState.dialpadEnabled);
-        mDialpadButton.setChecked(inCallControlState.dialpadVisible);
+        mDialpadButton.setEnabled(true);
+        mDialpadButton.setChecked(false); // TODO
 
         // "Mute"
-        mMuteButton.setEnabled(inCallControlState.canMute);
-        mMuteButton.setChecked(inCallControlState.muteIndicatorOn);
+        mMuteButton.setEnabled(true);
+        mMuteButton.setChecked(false); // TODO
 
         // "Audio"
-        updateAudioButton(inCallControlState);
+        updateAudioButton(); // TODO state
 
-        // "Hold" / "Swap":
-        // These two buttons occupy the same space onscreen, so at any
-        // given point exactly one of them must be VISIBLE and the other
-        // must be GONE.
-        if (inCallControlState.canHold) {
-            mHoldButton.setVisibility(View.VISIBLE);
+        mHoldButton.setVisibility(View.VISIBLE);
             mHoldButton.setEnabled(true);
-            mHoldButton.setChecked(inCallControlState.onHold);
+            mHoldButton.setChecked(false); // TODO
             mSwapButton.setVisibility(View.GONE);
             mHoldSwapSpacer.setVisibility(View.VISIBLE);
-        } else if (inCallControlState.canSwap) {
-            mSwapButton.setVisibility(View.VISIBLE);
-            mSwapButton.setEnabled(true);
-            mHoldButton.setVisibility(View.GONE);
-            mHoldSwapSpacer.setVisibility(View.VISIBLE);
-        } else {
-            // Neither "Hold" nor "Swap" is available.  This can happen for two
-            // reasons:
-            //   (1) this is a transient state on a device that *can*
-            //       normally hold or swap, or
-            //   (2) this device just doesn't have the concept of hold/swap.
-            //
-            // In case (1), show the "Hold" button in a disabled state.  In case
-            // (2), remove the button entirely.  (This means that the button row
-            // will only have 4 buttons on some devices.)
+//        } else if (inCallControlState.canSwap) {
+//            mSwapButton.setVisibility(View.VISIBLE);
+//            mSwapButton.setEnabled(true);
+//            mHoldButton.setVisibility(View.GONE);
+//            mHoldSwapSpacer.setVisibility(View.VISIBLE);
+//        } else {
+//            // Neither "Hold" nor "Swap" is available.  This can happen for two
+//            // reasons:
+//            //   (1) this is a transient state on a device that *can*
+//            //       normally hold or swap, or
+//            //   (2) this device just doesn't have the concept of hold/swap.
+//            //
+//            // In case (1), show the "Hold" button in a disabled state.  In case
+//            // (2), remove the button entirely.  (This means that the button row
+//            // will only have 4 buttons on some devices.)
+//
+//            if (inCallControlState.supportsHold) {
+//                mHoldButton.setVisibility(View.VISIBLE);
+//                mHoldButton.setEnabled(false);
+//                mHoldButton.setChecked(false);
+//                mSwapButton.setVisibility(View.GONE);
+//                mHoldSwapSpacer.setVisibility(View.VISIBLE);
+//            } else {
+//                mHoldButton.setVisibility(View.GONE);
+//                mSwapButton.setVisibility(View.GONE);
+//                mHoldSwapSpacer.setVisibility(View.GONE);
+//            }
+//        }
+//        mInCallScreen.updateButtonStateOutsideInCallTouchUi();
+//        if (inCallControlState.canSwap && inCallControlState.canHold) {
+//            // Uh oh, the InCallControlState thinks that Swap *and* Hold
+//            // should both be available.  This *should* never happen with
+//            // either GSM or CDMA, but if it's possible on any future
+//            // devices we may need to re-layout Hold and Swap so they can
+//            // both be visible at the same time...
+//            Log.w(LOG_TAG, "updateInCallControls: Hold *and* Swap enabled, but can't show both!");
+//        }
 
-            if (inCallControlState.supportsHold) {
-                mHoldButton.setVisibility(View.VISIBLE);
-                mHoldButton.setEnabled(false);
-                mHoldButton.setChecked(false);
-                mSwapButton.setVisibility(View.GONE);
-                mHoldSwapSpacer.setVisibility(View.VISIBLE);
-            } else {
-                mHoldButton.setVisibility(View.GONE);
-                mSwapButton.setVisibility(View.GONE);
-                mHoldSwapSpacer.setVisibility(View.GONE);
-            }
-        }
-        mInCallScreen.updateButtonStateOutsideInCallTouchUi();
-        if (inCallControlState.canSwap && inCallControlState.canHold) {
-            // Uh oh, the InCallControlState thinks that Swap *and* Hold
-            // should both be available.  This *should* never happen with
-            // either GSM or CDMA, but if it's possible on any future
-            // devices we may need to re-layout Hold and Swap so they can
-            // both be visible at the same time...
-            Log.w(LOG_TAG, "updateInCallControls: Hold *and* Swap enabled, but can't show both!");
-        }
-
-        if (phoneType == PhoneConstants.PHONE_TYPE_CDMA) {
-            if (inCallControlState.canSwap && inCallControlState.canMerge) {
-                // Uh oh, the InCallControlState thinks that Swap *and* Merge
-                // should both be available.  This *should* never happen with
-                // CDMA, but if it's possible on any future
-                // devices we may need to re-layout Merge and Swap so they can
-                // both be visible at the same time...
-                Log.w(LOG_TAG, "updateInCallControls: Merge *and* Swap" +
-                        "enabled, but can't show both!");
-            }
-        }
+//        if (phoneType == PhoneConstants.PHONE_TYPE_CDMA) {
+//            if (inCallControlState.canSwap && inCallControlState.canMerge) {
+//                // Uh oh, the InCallControlState thinks that Swap *and* Merge
+//                // should both be available.  This *should* never happen with
+//                // CDMA, but if it's possible on any future
+//                // devices we may need to re-layout Merge and Swap so they can
+//                // both be visible at the same time...
+//                Log.w(LOG_TAG, "updateInCallControls: Merge *and* Swap" +
+//                        "enabled, but can't show both!");
+//            }
+//        }
 
         // Finally, update the "extra button row": It's displayed above the
         // "End" button, but only if necessary.  Also, it's never displayed
@@ -623,84 +617,84 @@ public class InCallTouchUi extends FrameLayout
         //
         // Note that mExtraButtonRow is ViewStub, which will be inflated for the first time when
         // any of its buttons becomes visible.
-        final boolean showCdmaMerge =
-                (phoneType == PhoneConstants.PHONE_TYPE_CDMA) && inCallControlState.canMerge;
-        final boolean showExtraButtonRow =
-                showCdmaMerge || inCallControlState.manageConferenceVisible;
-        if (showExtraButtonRow && !inCallControlState.dialpadVisible) {
+//        final boolean showCdmaMerge =
+//                (phoneType == PhoneConstants.PHONE_TYPE_CDMA) && inCallControlState.canMerge;
+//        final boolean showExtraButtonRow =
+//                showCdmaMerge || inCallControlState.manageConferenceVisible;
+//        if (showExtraButtonRow && !inCallControlState.dialpadVisible) {
             // This will require the ViewStub inflate itself.
-            mExtraButtonRow.setVisibility(View.VISIBLE);
+            mExtraButtonRow.setVisibility(View.INVISIBLE);
 
-            // Need to set up mCdmaMergeButton and mManageConferenceButton if this is the first
-            // time they're visible.
-            if (mCdmaMergeButton == null) {
-                setupExtraButtons();
-            }
-            mCdmaMergeButton.setVisibility(showCdmaMerge ? View.VISIBLE : View.GONE);
-            if (inCallControlState.manageConferenceVisible) {
-                mManageConferenceButton.setVisibility(View.VISIBLE);
-                mManageConferenceButtonImage.setEnabled(inCallControlState.manageConferenceEnabled);
-            } else {
-                mManageConferenceButton.setVisibility(View.GONE);
-            }
-        } else {
-            mExtraButtonRow.setVisibility(View.GONE);
-        }
-
-        if (DBG) {
-            log("At the end of updateInCallControls().");
-            dumpBottomButtonState();
-        }
+//            // Need to set up mCdmaMergeButton and mManageConferenceButton if this is the first
+//            // time they're visible.
+//            if (mCdmaMergeButton == null) {
+//                setupExtraButtons();
+//            }
+//            mCdmaMergeButton.setVisibility(showCdmaMerge ? View.VISIBLE : View.GONE);
+//            if (inCallControlState.manageConferenceVisible) {
+//                mManageConferenceButton.setVisibility(View.VISIBLE);
+//                mManageConferenceButtonImage.setEnabled(inCallControlState.manageConferenceEnabled);
+//            } else {
+//                mManageConferenceButton.setVisibility(View.GONE);
+//            }
+//        } else {
+//            mExtraButtonRow.setVisibility(View.GONE);
+//        }
+//
+//        if (DBG) {
+//            log("At the end of updateInCallControls().");
+//            dumpBottomButtonState();
+//        }
     }
 
-    /**
-     * Set up the buttons that are part of the "extra button row"
-     */
-    private void setupExtraButtons() {
-        // The two "buttons" here (mCdmaMergeButton and mManageConferenceButton)
-        // are actually layouts containing an icon and a text label side-by-side.
-        mCdmaMergeButton = (ViewGroup) mInCallControls.findViewById(R.id.cdmaMergeButton);
-        if (mCdmaMergeButton == null) {
-            Log.wtf(LOG_TAG, "CDMA Merge button is null even after ViewStub being inflated.");
-            return;
-        }
-        mCdmaMergeButton.setOnClickListener(this);
+//    /**
+//     * Set up the buttons that are part of the "extra button row"
+//     */
+//    private void setupExtraButtons() {
+//        // The two "buttons" here (mCdmaMergeButton and mManageConferenceButton)
+//        // are actually layouts containing an icon and a text label side-by-side.
+//        mCdmaMergeButton = (ViewGroup) mInCallControls.findViewById(R.id.cdmaMergeButton);
+//        if (mCdmaMergeButton == null) {
+//            Log.wtf(LOG_TAG, "CDMA Merge button is null even after ViewStub being inflated.");
+//            return;
+//        }
+//        mCdmaMergeButton.setOnClickListener(this);
+//
+//        mManageConferenceButton =
+//                (ViewGroup) mInCallControls.findViewById(R.id.manageConferenceButton);
+//        mManageConferenceButton.setOnClickListener(this);
+//        mManageConferenceButtonImage =
+//                (ImageButton) mInCallControls.findViewById(R.id.manageConferenceButtonImage);
+//    }
 
-        mManageConferenceButton =
-                (ViewGroup) mInCallControls.findViewById(R.id.manageConferenceButton);
-        mManageConferenceButton.setOnClickListener(this);
-        mManageConferenceButtonImage =
-                (ImageButton) mInCallControls.findViewById(R.id.manageConferenceButtonImage);
-    }
-
-    private void dumpBottomButtonState() {
-        log(" - dialpad: " + getButtonState(mDialpadButton));
-        log(" - speaker: " + getButtonState(mAudioButton));
-        log(" - mute: " + getButtonState(mMuteButton));
-        log(" - hold: " + getButtonState(mHoldButton));
-        log(" - swap: " + getButtonState(mSwapButton));
-        log(" - add: " + getButtonState(mAddButton));
-        log(" - merge: " + getButtonState(mMergeButton));
-        log(" - cdmaMerge: " + getButtonState(mCdmaMergeButton));
-        log(" - swap: " + getButtonState(mSwapButton));
-        log(" - manageConferenceButton: " + getButtonState(mManageConferenceButton));
-    }
-
-    private static String getButtonState(View view) {
-        if (view == null) {
-            return "(null)";
-        }
-        StringBuilder builder = new StringBuilder();
-        builder.append("visibility: " + (view.getVisibility() == View.VISIBLE ? "VISIBLE"
-                : view.getVisibility() == View.INVISIBLE ? "INVISIBLE" : "GONE"));
-        if (view instanceof ImageButton) {
-            builder.append(", enabled: " + ((ImageButton) view).isEnabled());
-        } else if (view instanceof CompoundButton) {
-            builder.append(", enabled: " + ((CompoundButton) view).isEnabled());
-            builder.append(", checked: " + ((CompoundButton) view).isChecked());
-        }
-        return builder.toString();
-    }
+//    private void dumpBottomButtonState() {
+//        log(" - dialpad: " + getButtonState(mDialpadButton));
+//        log(" - speaker: " + getButtonState(mAudioButton));
+//        log(" - mute: " + getButtonState(mMuteButton));
+//        log(" - hold: " + getButtonState(mHoldButton));
+//        log(" - swap: " + getButtonState(mSwapButton));
+//        log(" - add: " + getButtonState(mAddButton));
+//        log(" - merge: " + getButtonState(mMergeButton));
+//        log(" - cdmaMerge: " + getButtonState(mCdmaMergeButton));
+//        log(" - swap: " + getButtonState(mSwapButton));
+//        log(" - manageConferenceButton: " + getButtonState(mManageConferenceButton));
+//    }
+//
+//    private static String getButtonState(View view) {
+//        if (view == null) {
+//            return "(null)";
+//        }
+//        StringBuilder builder = new StringBuilder();
+//        builder.append("visibility: " + (view.getVisibility() == View.VISIBLE ? "VISIBLE"
+//                : view.getVisibility() == View.INVISIBLE ? "INVISIBLE" : "GONE"));
+//        if (view instanceof ImageButton) {
+//            builder.append(", enabled: " + ((ImageButton) view).isEnabled());
+//        } else if (view instanceof CompoundButton) {
+//            builder.append(", enabled: " + ((CompoundButton) view).isEnabled());
+//            builder.append(", checked: " + ((CompoundButton) view).isChecked());
+//        }
+//        return builder.toString();
+//    }
 
     /**
      * Updates the onscreen "Audio mode" button based on the current state.
@@ -716,101 +710,101 @@ public class InCallTouchUi extends FrameLayout
      *
      * - If even speaker isn't available, disable the button entirely.
      */
-    private void updateAudioButton(InCallControlState inCallControlState) {
-        if (DBG) log("updateAudioButton()...");
-
-        // The various layers of artwork for this button come from
-        // btn_compound_audio.xml.  Keep track of which layers we want to be
-        // visible:
-        //
-        // - This selector shows the blue bar below the button icon when
-        //   this button is a toggle *and* it's currently "checked".
-        boolean showToggleStateIndication = false;
-        //
-        // - This is visible if the popup menu is enabled:
-        boolean showMoreIndicator = false;
-        //
-        // - Foreground icons for the button.  Exactly one of these is enabled:
-        boolean showSpeakerOnIcon = false;
-        boolean showSpeakerOffIcon = false;
-        boolean showHandsetIcon = false;
-        boolean showBluetoothIcon = false;
-
-        if (inCallControlState.bluetoothEnabled) {
-            if (DBG) log("- updateAudioButton: 'popup menu action button' mode...");
-
-            mAudioButton.setEnabled(true);
-
-            // The audio button is NOT a toggle in this state.  (And its
-            // setChecked() state is irrelevant since we completely hide the
-            // btn_compound_background layer anyway.)
-
-            // Update desired layers:
-            showMoreIndicator = true;
-            if (inCallControlState.bluetoothIndicatorOn) {
-                showBluetoothIcon = true;
-            } else if (inCallControlState.speakerOn) {
-                showSpeakerOnIcon = true;
-            } else {
-                showHandsetIcon = true;
-                // TODO: if a wired headset is plugged in, that takes precedence
-                // over the handset earpiece.  If so, maybe we should show some
-                // sort of "wired headset" icon here instead of the "handset
-                // earpiece" icon.  (Still need an asset for that, though.)
-            }
-        } else if (inCallControlState.speakerEnabled) {
-            if (DBG) log("- updateAudioButton: 'speaker toggle' mode...");
-
-            mAudioButton.setEnabled(true);
-
-            // The audio button *is* a toggle in this state, and indicates the
-            // current state of the speakerphone.
-            mAudioButton.setChecked(inCallControlState.speakerOn);
-
-            // Update desired layers:
-            showToggleStateIndication = true;
-
-            showSpeakerOnIcon = inCallControlState.speakerOn;
-            showSpeakerOffIcon = !inCallControlState.speakerOn;
-        } else {
-            if (DBG) log("- updateAudioButton: disabled...");
-
-            // The audio button is a toggle in this state, but that's mostly
-            // irrelevant since it's always disabled and unchecked.
-            mAudioButton.setEnabled(false);
-            mAudioButton.setChecked(false);
-
-            // Update desired layers:
-            showToggleStateIndication = true;
-            showSpeakerOffIcon = true;
-        }
-
-        // Finally, update the drawable layers (see btn_compound_audio.xml).
-
-        // Constants used below with Drawable.setAlpha():
-        final int HIDDEN = 0;
-        final int VISIBLE = 255;
-
-        LayerDrawable layers = (LayerDrawable) mAudioButton.getBackground();
-        if (DBG) log("- 'layers' drawable: " + layers);
-
-        layers.findDrawableByLayerId(R.id.compoundBackgroundItem)
-                .setAlpha(showToggleStateIndication ? VISIBLE : HIDDEN);
-
-        layers.findDrawableByLayerId(R.id.moreIndicatorItem)
-                .setAlpha(showMoreIndicator ? VISIBLE : HIDDEN);
-
-        layers.findDrawableByLayerId(R.id.bluetoothItem)
-                .setAlpha(showBluetoothIcon ? VISIBLE : HIDDEN);
-
-        layers.findDrawableByLayerId(R.id.handsetItem)
-                .setAlpha(showHandsetIcon ? VISIBLE : HIDDEN);
-
-        layers.findDrawableByLayerId(R.id.speakerphoneOnItem)
-                .setAlpha(showSpeakerOnIcon ? VISIBLE : HIDDEN);
-
-        layers.findDrawableByLayerId(R.id.speakerphoneOffItem)
-                .setAlpha(showSpeakerOffIcon ? VISIBLE : HIDDEN);
+    private void updateAudioButton() {
+//        if (DBG) log("updateAudioButton()...");
+//
+//        // The various layers of artwork for this button come from
+//        // btn_compound_audio.xml.  Keep track of which layers we want to be
+//        // visible:
+//        //
+//        // - This selector shows the blue bar below the button icon when
+//        //   this button is a toggle *and* it's currently "checked".
+//        boolean showToggleStateIndication = false;
+//        //
+//        // - This is visible if the popup menu is enabled:
+//        boolean showMoreIndicator = false;
+//        //
+//        // - Foreground icons for the button.  Exactly one of these is enabled:
+//        boolean showSpeakerOnIcon = false;
+//        boolean showSpeakerOffIcon = false;
+//        boolean showHandsetIcon = false;
+//        boolean showBluetoothIcon = false;
+//
+//        if (inCallControlState.bluetoothEnabled) {
+//            if (DBG) log("- updateAudioButton: 'popup menu action button' mode...");
+//
+//            mAudioButton.setEnabled(true);
+//
+//            // The audio button is NOT a toggle in this state.  (And its
+//            // setChecked() state is irrelevant since we completely hide the
+//            // btn_compound_background layer anyway.)
+//
+//            // Update desired layers:
+//            showMoreIndicator = true;
+//            if (inCallControlState.bluetoothIndicatorOn) {
+//                showBluetoothIcon = true;
+//            } else if (inCallControlState.speakerOn) {
+//                showSpeakerOnIcon = true;
+//            } else {
+//                showHandsetIcon = true;
+//                // TODO: if a wired headset is plugged in, that takes precedence
+//                // over the handset earpiece.  If so, maybe we should show some
+//                // sort of "wired headset" icon here instead of the "handset
+//                // earpiece" icon.  (Still need an asset for that, though.)
+//            }
+//        } else if (inCallControlState.speakerEnabled) {
+//            if (DBG) log("- updateAudioButton: 'speaker toggle' mode...");
+//
+//            mAudioButton.setEnabled(true);
+//
+//            // The audio button *is* a toggle in this state, and indicates the
+//            // current state of the speakerphone.
+//            mAudioButton.setChecked(inCallControlState.speakerOn);
+//
+//            // Update desired layers:
+//            showToggleStateIndication = true;
+//
+//            showSpeakerOnIcon = inCallControlState.speakerOn;
+//            showSpeakerOffIcon = !inCallControlState.speakerOn;
+//        } else {
+//            if (DBG) log("- updateAudioButton: disabled...");
+//
+//            // The audio button is a toggle in this state, but that's mostly
+//            // irrelevant since it's always disabled and unchecked.
+//            mAudioButton.setEnabled(false);
+//            mAudioButton.setChecked(false);
+//
+//            // Update desired layers:
+//            showToggleStateIndication = true;
+//            showSpeakerOffIcon = true;
+//        }
+//
+//        // Finally, update the drawable layers (see btn_compound_audio.xml).
+//
+//        // Constants used below with Drawable.setAlpha():
+//        final int HIDDEN = 0;
+//        final int VISIBLE = 255;
+//
+//        LayerDrawable layers = (LayerDrawable) mAudioButton.getBackground();
+//        if (DBG) log("- 'layers' drawable: " + layers);
+//
+//        layers.findDrawableByLayerId(R.id.compoundBackgroundItem)
+//                .setAlpha(showToggleStateIndication ? VISIBLE : HIDDEN);
+//
+//        layers.findDrawableByLayerId(R.id.moreIndicatorItem)
+//                .setAlpha(showMoreIndicator ? VISIBLE : HIDDEN);
+//
+//        layers.findDrawableByLayerId(R.id.bluetoothItem)
+//                .setAlpha(showBluetoothIcon ? VISIBLE : HIDDEN);
+//
+//        layers.findDrawableByLayerId(R.id.handsetItem)
+//                .setAlpha(showHandsetIcon ? VISIBLE : HIDDEN);
+//
+//        layers.findDrawableByLayerId(R.id.speakerphoneOnItem)
+//                .setAlpha(showSpeakerOnIcon ? VISIBLE : HIDDEN);
+//
+//        layers.findDrawableByLayerId(R.id.speakerphoneOffItem)
+//                .setAlpha(showSpeakerOffIcon ? VISIBLE : HIDDEN);
     }
 
     /**
@@ -821,14 +815,14 @@ public class InCallTouchUi extends FrameLayout
      *   speaker, with no popup at all.
      */
     private void handleAudioButtonClick() {
-        InCallControlState inCallControlState = mInCallScreen.getUpdatedInCallControlState();
-        if (inCallControlState.bluetoothEnabled) {
-            if (DBG) log("- handleAudioButtonClick: 'popup menu' mode...");
-            showAudioModePopup();
-        } else {
-            if (DBG) log("- handleAudioButtonClick: 'speaker toggle' mode...");
-            mInCallScreen.toggleSpeaker();
-        }
+//        InCallControlState inCallControlState = mInCallScreen.getUpdatedInCallControlState();
+//        if (inCallControlState.bluetoothEnabled) {
+//            if (DBG) log("- handleAudioButtonClick: 'popup menu' mode...");
+//            showAudioModePopup();
+//        } else {
+//            if (DBG) log("- handleAudioButtonClick: 'speaker toggle' mode...");
+//            mInCallScreen.toggleSpeaker();
+//        }
     }
 
     /**
@@ -839,14 +833,14 @@ public class InCallTouchUi extends FrameLayout
 
         mAudioModePopup = new PopupMenu(mInCallScreen /* context */,
                                         mAudioButton /* anchorView */);
-        mAudioModePopup.getMenuInflater().inflate(R.menu.incall_audio_mode_menu,
-                                                  mAudioModePopup.getMenu());
-        mAudioModePopup.setOnMenuItemClickListener(this);
-        mAudioModePopup.setOnDismissListener(this);
+//        mAudioModePopup.getMenuInflater().inflate(R.menu.incall_audio_mode_menu,
+//                                                  mAudioModePopup.getMenu());
+//        mAudioModePopup.setOnMenuItemClickListener(this);
+//        mAudioModePopup.setOnDismissListener(this);
 
         // Update the enabled/disabledness of menu items based on the
         // current call state.
-        InCallControlState inCallControlState = mInCallScreen.getUpdatedInCallControlState();
+//        InCallControlState inCallControlState = mInCallScreen.getUpdatedInCallControlState();
 
         Menu menu = mAudioModePopup.getMenu();
 
@@ -855,26 +849,26 @@ public class InCallTouchUi extends FrameLayout
         // need exact visual design, and possibly framework support for this.
         // See comments below for the exact logic.
 
-        MenuItem speakerItem = menu.findItem(R.id.audio_mode_speaker);
-        speakerItem.setEnabled(inCallControlState.speakerEnabled);
+//        MenuItem speakerItem = menu.findItem(R.id.audio_mode_speaker);
+//        speakerItem.setEnabled(inCallControlState.speakerEnabled);
         // TODO: Show speakerItem as initially "selected" if
         // inCallControlState.speakerOn is true.
 
         // We display *either* "earpiece" or "wired headset", never both,
         // depending on whether a wired headset is physically plugged in.
-        MenuItem earpieceItem = menu.findItem(R.id.audio_mode_earpiece);
-        MenuItem wiredHeadsetItem = menu.findItem(R.id.audio_mode_wired_headset);
-        final boolean usingHeadset = mApp.isHeadsetPlugged();
-        earpieceItem.setVisible(!usingHeadset);
-        earpieceItem.setEnabled(!usingHeadset);
-        wiredHeadsetItem.setVisible(usingHeadset);
-        wiredHeadsetItem.setEnabled(usingHeadset);
+////        MenuItem earpieceItem = menu.findItem(R.id.audio_mode_earpiece);
+////        MenuItem wiredHeadsetItem = menu.findItem(R.id.audio_mode_wired_headset);
+////        final boolean usingHeadset = mApp.isHeadsetPlugged();
+//        earpieceItem.setVisible(!usingHeadset);
+//        earpieceItem.setEnabled(!usingHeadset);
+//        wiredHeadsetItem.setVisible(usingHeadset);
+//        wiredHeadsetItem.setEnabled(usingHeadset);
         // TODO: Show the above item (either earpieceItem or wiredHeadsetItem)
         // as initially "selected" if inCallControlState.speakerOn and
         // inCallControlState.bluetoothIndicatorOn are both false.
 
-        MenuItem bluetoothItem = menu.findItem(R.id.audio_mode_bluetooth);
-        bluetoothItem.setEnabled(inCallControlState.bluetoothEnabled);
+//        MenuItem bluetoothItem = menu.findItem(R.id.audio_mode_bluetooth);
+//        bluetoothItem.setEnabled(inCallControlState.bluetoothEnabled);
         // TODO: Show bluetoothItem as initially "selected" if
         // inCallControlState.bluetoothIndicatorOn is true.
 
@@ -886,81 +880,81 @@ public class InCallTouchUi extends FrameLayout
         mAudioModePopupVisible = true;
     }
 
-    /**
-     * Dismisses the "Audio mode" popup if it's visible.
-     *
-     * This is safe to call even if the popup is already dismissed, or even if
-     * you never called showAudioModePopup() in the first place.
-     */
-    public void dismissAudioModePopup() {
-        if (mAudioModePopup != null) {
-            mAudioModePopup.dismiss();  // safe even if already dismissed
-            mAudioModePopup = null;
-            mAudioModePopupVisible = false;
-        }
-    }
+//    /**
+//     * Dismisses the "Audio mode" popup if it's visible.
+//     *
+//     * This is safe to call even if the popup is already dismissed, or even if
+//     * you never called showAudioModePopup() in the first place.
+//     */
+//    public void dismissAudioModePopup() {
+//        if (mAudioModePopup != null) {
+//            mAudioModePopup.dismiss();  // safe even if already dismissed
+//            mAudioModePopup = null;
+//            mAudioModePopupVisible = false;
+//        }
+//    }
 
-    /**
-     * Refreshes the "Audio mode" popup if it's visible.  This is useful
-     * (for example) when a wired headset is plugged or unplugged,
-     * since we need to switch back and forth between the "earpiece"
-     * and "wired headset" items.
-     *
-     * This is safe to call even if the popup is already dismissed, or even if
-     * you never called showAudioModePopup() in the first place.
-     */
-    public void refreshAudioModePopup() {
-        if (mAudioModePopup != null && mAudioModePopupVisible) {
-            // Dismiss the previous one
-            mAudioModePopup.dismiss();  // safe even if already dismissed
-            // And bring up a fresh PopupMenu
-            showAudioModePopup();
-        }
-    }
+//    /**
+//     * Refreshes the "Audio mode" popup if it's visible.  This is useful
+//     * (for example) when a wired headset is plugged or unplugged,
+//     * since we need to switch back and forth between the "earpiece"
+//     * and "wired headset" items.
+//     *
+//     * This is safe to call even if the popup is already dismissed, or even if
+//     * you never called showAudioModePopup() in the first place.
+//     */
+//    public void refreshAudioModePopup() {
+//        if (mAudioModePopup != null && mAudioModePopupVisible) {
+//            // Dismiss the previous one
+//            mAudioModePopup.dismiss();  // safe even if already dismissed
+//            // And bring up a fresh PopupMenu
+//            showAudioModePopup();
+//        }
+//    }
+//
+//    // PopupMenu.OnMenuItemClickListener implementation; see showAudioModePopup()
+//    @Override
+//    public boolean onMenuItemClick(MenuItem item) {
+//        if (DBG) log("- onMenuItemClick: " + item);
+//        if (DBG) log("  id: " + item.getItemId());
+//        if (DBG) log("  title: '" + item.getTitle() + "'");
+//
+//        if (mInCallScreen == null) {
+//            Log.w(LOG_TAG, "onMenuItemClick(" + item + "), but null mInCallScreen!");
+//            return true;
+//        }
+//
+//        switch (item.getItemId()) {
+//            case R.id.audio_mode_speaker:
+//                mInCallScreen.switchInCallAudio(InCallScreen.InCallAudioMode.SPEAKER);
+//                break;
+//            case R.id.audio_mode_earpiece:
+//            case R.id.audio_mode_wired_headset:
+//                // InCallAudioMode.EARPIECE means either the handset earpiece,
+//                // or the wired headset (if connected.)
+//                mInCallScreen.switchInCallAudio(InCallScreen.InCallAudioMode.EARPIECE);
+//                break;
+//            case R.id.audio_mode_bluetooth:
+//                mInCallScreen.switchInCallAudio(InCallScreen.InCallAudioMode.BLUETOOTH);
+//                break;
+//            default:
+//                Log.wtf(LOG_TAG,
+//                        "onMenuItemClick:  unexpected View ID " + item.getItemId()
+//                        + " (MenuItem = '" + item + "')");
+//                break;
+//        }
+//        return true;
+//    }
 
-    // PopupMenu.OnMenuItemClickListener implementation; see showAudioModePopup()
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        if (DBG) log("- onMenuItemClick: " + item);
-        if (DBG) log("  id: " + item.getItemId());
-        if (DBG) log("  title: '" + item.getTitle() + "'");
-
-        if (mInCallScreen == null) {
-            Log.w(LOG_TAG, "onMenuItemClick(" + item + "), but null mInCallScreen!");
-            return true;
-        }
-
-        switch (item.getItemId()) {
-            case R.id.audio_mode_speaker:
-                mInCallScreen.switchInCallAudio(InCallScreen.InCallAudioMode.SPEAKER);
-                break;
-            case R.id.audio_mode_earpiece:
-            case R.id.audio_mode_wired_headset:
-                // InCallAudioMode.EARPIECE means either the handset earpiece,
-                // or the wired headset (if connected.)
-                mInCallScreen.switchInCallAudio(InCallScreen.InCallAudioMode.EARPIECE);
-                break;
-            case R.id.audio_mode_bluetooth:
-                mInCallScreen.switchInCallAudio(InCallScreen.InCallAudioMode.BLUETOOTH);
-                break;
-            default:
-                Log.wtf(LOG_TAG,
-                        "onMenuItemClick:  unexpected View ID " + item.getItemId()
-                        + " (MenuItem = '" + item + "')");
-                break;
-        }
-        return true;
-    }
-
-    // PopupMenu.OnDismissListener implementation; see showAudioModePopup().
-    // This gets called when the PopupMenu gets dismissed for *any* reason, like
-    // the user tapping outside its bounds, or pressing Back, or selecting one
-    // of the menu items.
-    @Override
-    public void onDismiss(PopupMenu menu) {
-        if (DBG) log("- onDismiss: " + menu);
-        mAudioModePopupVisible = false;
-    }
+//    // PopupMenu.OnDismissListener implementation; see showAudioModePopup().
+//    // This gets called when the PopupMenu gets dismissed for *any* reason, like
+//    // the user tapping outside its bounds, or pressing Back, or selecting one
+//    // of the menu items.
+//    @Override
+//    public void onDismiss(PopupMenu menu) {
+//        if (DBG) log("- onDismiss: " + menu);
+//        mAudioModePopupVisible = false;
+//    }
 
     /**
      * @return the amount of vertical space (in pixels) that needs to be

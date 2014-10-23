@@ -4464,7 +4464,7 @@ public class InCallActivity extends Activity
 //     */
     public void updateButtonStateOutsideInCallTouchUi() {
         if (mCallCard != null) {
-            mCallCard.setSecondaryCallClickable(false);
+//            mCallCard.setSecondaryCallClickable(false);
         }
     }
 

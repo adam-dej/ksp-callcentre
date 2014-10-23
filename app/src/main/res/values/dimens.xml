@@ -157,6 +157,6 @@
     <!-- Padding at the top and bottom edges of the "provider information" -->
     <dimen name="provider_info_top_bottom_padding">8dp</dimen>
 
-
+    <dimen name="in_call_touch_ui_upper_margin">2dp</dimen>
 
 </resources>
