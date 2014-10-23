@@ -16,8 +16,6 @@
 
 package sk.ksp.callcentrum.incall;
 
-import android.animation.LayoutTransition;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -26,13 +24,9 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.ContactsContract.Contacts;
-import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;

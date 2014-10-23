@@ -30,12 +30,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.provider.CallLog.Calls;
-import android.provider.ContactsContract.Contacts;
-import android.provider.ContactsContract.Intents;
 import android.speech.RecognizerIntent;
-import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -52,6 +48,11 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import sk.ksp.callcentrum.dialpad.DialpadFragment;
+
 /*
 import com.android.contacts.common.CallUtil;
 import com.android.contacts.common.activity.TransactionSafeActivity;
@@ -61,7 +62,6 @@ import com.android.contacts.common.list.OnPhoneNumberPickerActionListener;
 import com.android.dialer.calllog.CallLogActivity;
 import com.android.dialer.database.DialerDatabaseHelper;
 */
-import sk.ksp.callcentrum.dialpad.DialpadFragment;
 /*
 import com.android.dialer.dialpad.SmartDialNameMatcher;
 import com.android.dialer.dialpad.SmartDialPrefix;
@@ -78,9 +78,6 @@ import com.android.dialer.list.SearchFragment;
 import com.android.dialer.list.SmartDialSearchFragment;
 import com.android.dialerbind.DatabaseHelperManager;
 */
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The dialer tab's title is 'phone', a more common name (see strings.xml).
