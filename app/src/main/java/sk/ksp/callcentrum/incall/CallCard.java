@@ -22,8 +22,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -50,18 +48,12 @@ public class CallCard extends LinearLayout {
     private static final String LOG_TAG = "CallCard";
     private static final boolean DBG = true;
 
-    private static final int TOKEN_UPDATE_PHOTO_FOR_CALL_STATE = 0;
-    private static final int TOKEN_DO_NOTHING = 1;
-
     /**
      * Reference to the InCallScreen activity that owns us.  This may be
      * null if we haven't been initialized yet *or* after the InCallScreen
      * activity has been destroyed.
      */
     private InCallActivity mInCallScreen;
-
-    // Phone app instance
-//    private PhoneGlobals mApplication;
 
     // Top-level subviews of the CallCard
     /** Container for info about the current call(s) */
@@ -124,30 +116,12 @@ public class CallCard extends LinearLayout {
     // Cached DisplayMetrics density.
     private float mDensity;
 
-    /**
-     * Sent when it takes too long (MESSAGE_DELAY msec) to load a contact photo for the given
-     * person, at which we just start showing the default avatar picture instead of the person's
-     * one. Note that we will *not* cancel the ongoing query and eventually replace the avatar
-     * with the person's photo, when it is available anyway.
-     */
-    private static final int MESSAGE_SHOW_UNKNOWN_PHOTO = 101;
-    private static final int MESSAGE_DELAY = 500; // msec
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MESSAGE_SHOW_UNKNOWN_PHOTO:
-                    showImage(mPhoto, R.drawable.picture_unknown);
-                    break;
-                default:
-                    Log.wtf(LOG_TAG, "mHandler: unexpected message: " + msg);
-                    break;
-            }
-        }
-    };
+    private Context mContext;
 
     public CallCard(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        mContext = context;
 
         if (DBG) log("CallCard constructor...");
         if (DBG) log("- this = " + this);
@@ -202,7 +176,11 @@ public class CallCard extends LinearLayout {
      */
     // TODO update state
     public void updateState() {
-//        if (DBG) log("updateState(" + cm + ")...");
+        if (DBG) log("updateState()...");
+
+        // TODO temporary hardwired state
+        updateForegroundCall(0);
+
 //
 //        // Update the onscreen UI based on the current state of the phone.
 //
@@ -297,7 +275,11 @@ public class CallCard extends LinearLayout {
      * Updates the UI for the state where the phone is in use, but not ringing.
      */
     private void updateForegroundCall(int state) {
-//        if (DBG) log("updateForegroundCall()...");
+        if (DBG) log("updateForegroundCall()...");
+
+        // TODO temporary hardwired
+        displayMainCallStatus();
+
 //        // if (DBG) PhoneUtils.dumpCallManager();
 //
 //        Call fgCall = cm.getActiveFgCall();
@@ -372,14 +354,19 @@ public class CallCard extends LinearLayout {
      */
     private void displayMainCallStatus() {
 
-//        if (DBG) log("displayMainCallStatus(call " + call + ")...");
+        if (DBG) log("displayMainCallStatus()...");
+
+        mPrimaryCallInfo.setVisibility(View.VISIBLE);
+        updateCallStateWidgets();
+        updateInfoUi("KSP CallCentrum", "+427 947 427 472", "");
+        showImage(mPhoto, R.drawable.picture_unknown);
+
 //
 //        if (call == null) {
 //            // There's no call to display, presumably because the phone is idle.
 //            mPrimaryCallInfo.setVisibility(View.GONE);
 //            return;
 //        }
-//        mPrimaryCallInfo.setVisibility(View.VISIBLE);
 //
 //        Call.State state = call.getState();
 //        if (DBG) log("  - call.state: " + call.getState());
@@ -441,7 +428,6 @@ public class CallCard extends LinearLayout {
 //                break;
 //        }
 //
-//        updateCallStateWidgets(call);
 //
 //        if (PhoneUtils.isConferenceCall(call)) {
 //            // Update onscreen info for a conference call.
@@ -578,7 +564,22 @@ public class CallCard extends LinearLayout {
      * current state of the call.
      */
     private void updateCallStateWidgets() {
-//        if (DBG) log("updateCallStateWidgets(call " + call + ")...");
+        if (DBG) log("updateCallStateWidgets()...");
+
+        // TODO hardwired state
+
+        String callStateLabel = null;
+        callStateLabel = mContext.getString(R.string.card_title_dialing);
+
+        mProviderInfo.setVisibility(View.VISIBLE);
+
+        // TODO hardcoded string?!
+        mProviderLabel.setText(mContext.getString(R.string.calling_via_template, "KSP Network"));
+//        mProviderAddress.setText(inCallUiState.providerAddress);
+
+        mCallStateLabel.setVisibility(View.VISIBLE);
+        mCallStateLabel.setText(callStateLabel);
+
 //        final Call.State state = call.getState();
 //        final Context context = getContext();
 //        final Phone phone = call.getPhone();
@@ -762,7 +763,7 @@ public class CallCard extends LinearLayout {
      * is null or idle.
      */
     private void displaySecondaryCallStatus() {
-//        if (DBG) log("displayOnHoldCallStatus(call =" + call + ")...");
+        if (DBG) log("displayOnHoldCallStatus()...");
 //
 //        if ((call == null) || (PhoneGlobals.getInstance().isOtaCallInActiveState())) {
 //            mSecondaryCallInfo.setVisibility(View.GONE);

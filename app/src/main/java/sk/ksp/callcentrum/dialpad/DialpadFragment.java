@@ -111,19 +111,11 @@ public class DialpadFragment extends Fragment
         }
     }
 
-    public interface OnDialpadQueryChangedListener {
-        void onDialpadQueryChanged(String query);
-    }
-
     // TODO
     private static final boolean DEBUG = true;
 
     // This is the amount of screen the dialpad fragment takes up when fully displayed
     private static final float DIALPAD_SLIDE_FRACTION = 0.67f;
-
-    private static final String EMPTY_NUMBER = "";
-    private static final char PAUSE = ',';
-    private static final char WAIT = ';';
 
     /** The length of DTMF tones in milliseconds */
     private static final int TONE_LENGTH_MS = 150;
@@ -134,8 +126,6 @@ public class DialpadFragment extends Fragment
 
     /** Stream type used to play the DTMF tones off call, and mapped to the volume control keys */
     private static final int DIAL_TONE_STREAM_TYPE = AudioManager.STREAM_DTMF;
-
-    private OnDialpadQueryChangedListener mDialpadQueryListener;
 
     /**
      * View (usually FrameLayout) containing mDigits field. This can be null, in which mDigits
@@ -175,14 +165,18 @@ public class DialpadFragment extends Fragment
 
     }
 
+    public String getDigits() {
+        if (isLayoutReady()) {
+            return mDigits.getText().toString();
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public void afterTextChanged(Editable input) {
         if (isDigitsEmpty()) {
             mDigits.setCursorVisible(false);
-        }
-
-        if (mDialpadQueryListener != null) {
-            mDialpadQueryListener.onDialpadQueryChanged(mDigits.getText().toString());
         }
         updateDialAndDeleteButtonEnabledState();
     }
@@ -629,7 +623,7 @@ public class DialpadFragment extends Fragment
     /**
      * @return true if the widget with the phone number digits is empty.
      */
-    private boolean isDigitsEmpty() {
+    public boolean isDigitsEmpty() {
         return mDigits.length() == 0;
     }
 

@@ -17,6 +17,7 @@
 package sk.ksp.callcentrum.incall;
 
 import android.content.Context;
+import android.graphics.drawable.LayerDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -110,35 +111,17 @@ public class InCallTouchUi extends FrameLayout
         mSwapButton.setOnLongClickListener(this);
         mHoldSwapSpacer = mInCallControls.findViewById(R.id.holdSwapSpacer);
 
+        // TODO temporary hack, this should not be called from here
+        updateState();
+
     }
 
     // TODO wire up custom call manager
     public void updateState() {
-        if (mInCallScreen == null) {
-            log("- updateState: mInCallScreen has been destroyed; bailing out...");
-            return;
-        }
 
-        boolean showInCallControls = true;
+        updateInCallControls();
+        mInCallControls.setVisibility(View.VISIBLE);
 
-            if (okToShowInCallControls()) {
-                showInCallControls = true;
-            } else {
-                if (DBG) log("- updateState: NOT OK to show touch UI; disabling...");
-            }
-
-        if (showInCallControls) {
-            if (DBG) log("- updateState: showing in-call controls...");
-            updateInCallControls();
-            mInCallControls.setVisibility(View.VISIBLE);
-        } else {
-            if (DBG) log("- updateState: HIDING in-call controls...");
-            mInCallControls.setVisibility(View.GONE);
-        }
-    }
-
-    private boolean okToShowInCallControls() {
-        return true;
     }
 
     @Override
@@ -203,6 +186,9 @@ public class InCallTouchUi extends FrameLayout
      * "inCallControls" panel, based on the current telephony state.
      */
     private void updateInCallControls() {
+
+        Log.d(LOG_TAG, "updateInCallControls()");
+
         // "End call"
         mEndButton.setEnabled(true);
 
@@ -216,13 +202,17 @@ public class InCallTouchUi extends FrameLayout
         mMuteButton.setChecked(false); // TODO
 
         // "Audio"
+        mAudioButton.setEnabled(true);
+        mAudioButton.setChecked(true); // They cannot change this
         updateAudioButton(); // TODO state
 
         mHoldButton.setVisibility(View.VISIBLE);
-            mHoldButton.setEnabled(true);
-            mHoldButton.setChecked(false); // TODO
-            mSwapButton.setVisibility(View.GONE);
-            mHoldSwapSpacer.setVisibility(View.VISIBLE);
+        mHoldButton.setEnabled(true);
+        mHoldButton.setChecked(false); // TODO
+        mSwapButton.setVisibility(View.GONE);
+        mHoldSwapSpacer.setVisibility(View.VISIBLE);
+
+        mMergeButton.setVisibility(GONE);
     }
 
     /**
@@ -240,23 +230,20 @@ public class InCallTouchUi extends FrameLayout
      * - If even speaker isn't available, disable the button entirely.
      */
     private void updateAudioButton() {
-//        layers.findDrawableByLayerId(R.id.compoundBackgroundItem)
-//                .setAlpha(showToggleStateIndication ? VISIBLE : HIDDEN);
-//
-//        layers.findDrawableByLayerId(R.id.moreIndicatorItem)
-//                .setAlpha(showMoreIndicator ? VISIBLE : HIDDEN);
-//
-//        layers.findDrawableByLayerId(R.id.bluetoothItem)
-//                .setAlpha(showBluetoothIcon ? VISIBLE : HIDDEN);
-//
-//        layers.findDrawableByLayerId(R.id.handsetItem)
-//                .setAlpha(showHandsetIcon ? VISIBLE : HIDDEN);
-//
-//        layers.findDrawableByLayerId(R.id.speakerphoneOnItem)
-//                .setAlpha(showSpeakerOnIcon ? VISIBLE : HIDDEN);
-//
-//        layers.findDrawableByLayerId(R.id.speakerphoneOffItem)
-//                .setAlpha(showSpeakerOffIcon ? VISIBLE : HIDDEN);
+
+        LayerDrawable layers = (LayerDrawable) mAudioButton.getBackground();
+
+        layers.findDrawableByLayerId(R.id.compoundBackgroundItem).setAlpha(0);
+
+        layers.findDrawableByLayerId(R.id.moreIndicatorItem).setAlpha(0);
+
+        layers.findDrawableByLayerId(R.id.bluetoothItem).setAlpha(0);
+
+        layers.findDrawableByLayerId(R.id.handsetItem).setAlpha(0);
+
+        layers.findDrawableByLayerId(R.id.speakerphoneOnItem).setAlpha(255);
+
+        layers.findDrawableByLayerId(R.id.speakerphoneOffItem).setAlpha(0);
     }
 
     /**

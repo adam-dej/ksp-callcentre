@@ -49,7 +49,6 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
     private static final String KEY_IN_REGULAR_SEARCH_UI = "in_regular_search_ui";
     private static final String KEY_IN_DIALPAD_SEARCH_UI = "in_dialpad_search_ui";
     private static final String KEY_SEARCH_QUERY = "search_query";
-    private static final String KEY_FIRST_LAUNCH = "first_launch";
 
     private static final String TAG_DIALPAD_FRAGMENT = "dialpad";
 
@@ -181,8 +180,11 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
                 break;
             case R.id.dial_button:
                 Log.d(TAG, "Dial button pressed!");
-                Intent intent = new Intent(this, InCallActivity.class);
-                startActivity(intent);
+                if (!mDialpadFragment.isDigitsEmpty()) {
+                    Intent intent = new Intent(this, InCallActivity.class);
+                    intent.putExtra("EXTRA_NUMBER", mDialpadFragment.getDigits());
+                    startActivity(intent);
+                }
                 break;
             case R.id.call_history_button:
                 // possibility for action

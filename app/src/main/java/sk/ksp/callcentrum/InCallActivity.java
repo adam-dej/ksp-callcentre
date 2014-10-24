@@ -18,6 +18,8 @@ package sk.ksp.callcentrum;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -30,13 +32,14 @@ import sk.ksp.callcentrum.incall.AnimationUtils;
 import sk.ksp.callcentrum.incall.CallCard;
 import sk.ksp.callcentrum.incall.DTMFTwelveKeyDialer;
 import sk.ksp.callcentrum.incall.InCallTouchUi;
+import sk.ksp.callcentrum.sessions.DummySession;
 
 
 /**
  * Phone app "in call" screen.
  */
 public class InCallActivity extends Activity
-        implements View.OnClickListener {
+        implements View.OnClickListener, Handler.Callback {
     private static final String LOG_TAG = "InCallActivity";
 
     private static final boolean DBG = true;
@@ -48,6 +51,7 @@ public class InCallActivity extends Activity
     private InCallTouchUi mInCallTouchUi;
     private DTMFTwelveKeyDialer mDialer;
 
+    private CallSessionManager callSessionManager;
 
     @Override
     protected void onCreate(Bundle icicle) {
@@ -60,6 +64,12 @@ public class InCallActivity extends Activity
         setContentView(R.layout.incall_screen);
 
         initInCallScreen();
+
+        // TODO get number from extra and create appropriade call session
+
+        // TODO this does not look right...
+        callSessionManager = new DummySession(new Handler(this));
+
     }
 
     @Override
@@ -82,28 +92,9 @@ public class InCallActivity extends Activity
         mDialer.stopDialerSession();
     }
 
-    /**
-     * Dismisses the in-call screen.
-     *
-     * We never *really* finish() the InCallActivity, since we don't want to
-     * get destroyed and then have to be re-created from scratch for the
-     * next call.  Instead, we just move ourselves to the back of the
-     * activity stack.
-     *
-     * This also means that we'll no longer be reachable via the BACK
-     * button (since moveTaskToBack() puts us behind the Home app, but the
-     * home app doesn't allow the BACK key to move you any farther down in
-     * the history stack.)
-     *
-     * (Since the Phone app itself is never killed, this basically means
-     * that we'll keep a single InCallActivity instance around for the
-     * entire uptime of the device.  This noticeably improves the UI
-     * responsiveness for incoming calls.)
-     */
     @Override
-    public void finish() {
-        if (DBG) log("finish()...");
-        moveTaskToBack(true);
+    public boolean handleMessage(Message message) {
+        return true;
     }
 
     private void initInCallScreen() {
@@ -120,11 +111,16 @@ public class InCallActivity extends Activity
 
         ViewStub stub = (ViewStub) findViewById(R.id.dtmf_twelve_key_dialer_stub);
         mDialer = new DTMFTwelveKeyDialer(this, stub);
+
+        // TODO temporary hack
+        mCallCard.updateState();
     }
 
     private boolean handleDialerKeyDown(int keyCode, KeyEvent event) {
 
-        // TODO Really handle dialer key down
+        // TODO Really handle dialer key dow
+
+        Log.d(LOG_TAG, "handleDialerKeyDown: " + keyCode + "; " + event.toString());
 
         if (isKeyEventAcceptableDTMF(event)) {
             return mDialer.onDialerKeyDown(event);
@@ -169,7 +165,7 @@ public class InCallActivity extends Activity
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        // if (DBG) log("onKeyUp(keycode " + keyCode + ")...");
+        if (DBG) log("onKeyUp(keycode " + keyCode + "; event " + event.toString() + ")...");
 
         // push input to the dialer.
         if ((mDialer != null) && (mDialer.onDialerKeyUp(event))){
@@ -183,6 +179,8 @@ public class InCallActivity extends Activity
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (DBG) log("onKeyDown(keycode " + keyCode + "; event " + event.toString() + ")...");
 
         switch (keyCode) {
             case KeyEvent.KEYCODE_CAMERA:

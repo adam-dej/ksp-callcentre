@@ -149,4 +149,6 @@
     <color name="incall_secondary_info_background">#8033b5e5</color> <!-- semitransparent blueish grey -->
 
     <color name="incall_callTypeSip">#99CE3F</color> <!-- green -->
+
+    <color name="row_3_background">#000000</color>
 </resources>
