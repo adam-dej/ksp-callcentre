@@ -181,6 +181,8 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
                 break;
             case R.id.dial_button:
                 Log.d(TAG, "Dial button pressed!");
+                Intent intent = new Intent(this, InCallActivity.class);
+                startActivity(intent);
                 break;
             case R.id.call_history_button:
                 // possibility for action

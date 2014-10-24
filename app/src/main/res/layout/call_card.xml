@@ -21,7 +21,7 @@
      here are both "match_parent"), but we manually adjust its bottom margin
      in CallCard.updateCallInfoLayout() to make sure it doesn't overlap with
      the onscreen buttons from incall_touch_ui.xml. -->
-<com.android.phone.CallCard xmlns:android="http://schemas.android.com/apk/res/android"
+<sk.ksp.callcentrum.incall.CallCard xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/call_info_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -50,4 +50,4 @@
          android:layout_height="0dp"
          android:layout_weight="1" />
 
-</com.android.phone.CallCard>
+</sk.ksp.callcentrum.incall.CallCard>
