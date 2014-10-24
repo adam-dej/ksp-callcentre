@@ -133,7 +133,13 @@ public class InCallTouchUi extends FrameLayout
             case R.id.addButton:
             case R.id.mergeButton:
             case R.id.endButton:
+                // TODO temporary
+                mInCallScreen.finish();
+                break;
             case R.id.dialpadButton:
+                // TODO temporary
+                mInCallScreen.onOpenCloseDialpad();
+                break;
             case R.id.muteButton:
             case R.id.holdButton:
             case R.id.swapButton:

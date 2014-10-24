@@ -78,6 +78,10 @@ public class DTMFTwelveKeyDialer implements View.OnTouchListener, View.OnKeyList
     //  Short Dtmf tone duration
     private static final int DTMF_DURATION_MS = 120;
 
+    private static final int DIAL_TONE_STREAM_TYPE = AudioManager.STREAM_DTMF;
+
+    /** The DTMF tone volume relative to other sounds in the stream */
+    private static final int TONE_RELATIVE_VOLUME = 80;
 
     /** Hash Map to map a character to a tone*/
     private static final HashMap<Character, Integer> mToneMap =
@@ -374,7 +378,7 @@ public class DTMFTwelveKeyDialer implements View.OnTouchListener, View.OnKeyList
      * @param dialerView the DTMFTwelveKeyDialerView we should use to display the dialpad.
      */
     public DTMFTwelveKeyDialer(InCallActivity parent,
-                                DTMFTwelveKeyDialerView dialerView) {
+                               DTMFTwelveKeyDialerView dialerView) {
         this(parent);
 
         // The passed-in DTMFTwelveKeyDialerView *should* always be
@@ -425,6 +429,8 @@ public class DTMFTwelveKeyDialer implements View.OnTouchListener, View.OnKeyList
 //        mCM = PhoneGlobals.getInstance().mCM;
         mAccessibilityManager = (AccessibilityManager) parent.getSystemService(
                 Context.ACCESSIBILITY_SERVICE);
+
+        mToneGenerator = new ToneGenerator(DIAL_TONE_STREAM_TYPE, TONE_RELATIVE_VOLUME);
     }
 
     /**
@@ -599,6 +605,7 @@ public class DTMFTwelveKeyDialer implements View.OnTouchListener, View.OnKeyList
             button.setOnHoverListener(this);
             button.setOnClickListener(this);
         }
+
     }
 
     /**
@@ -948,16 +955,13 @@ public class DTMFTwelveKeyDialer implements View.OnTouchListener, View.OnKeyList
         if (!mToneMap.containsKey(c)) {
             return;
         }
-        if (mLocalToneEnabled) {
+        if (true) {
             synchronized (mToneGeneratorLock) {
                 if (mToneGenerator == null) {
                     if (DBG) log("startDtmfTone: mToneGenerator == null, tone: " + c);
                 } else {
                     if (DBG) log("starting local tone " + c);
-                    int toneDuration = -1;
-                    if (mShortTone) {
-                        toneDuration = DTMF_DURATION_MS;
-                    }
+                    int toneDuration = DTMF_DURATION_MS;
                     mToneGenerator.startTone(mToneMap.get(c), toneDuration);
                 }
             }

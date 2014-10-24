@@ -159,4 +159,6 @@
 
     <dimen name="in_call_touch_ui_upper_margin">2dp</dimen>
 
+    <integer name="dialpad_layout_weight_dialpad">65</integer>
+
 </resources>

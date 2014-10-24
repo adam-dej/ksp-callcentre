@@ -237,7 +237,7 @@ public class InCallActivity extends Activity
     private void onMuteClick() {
     }
 
-    private void onOpenCloseDialpad() {
+    public void onOpenCloseDialpad() {
         if (VDBG) log("onOpenCloseDialpad()...");
         if (mDialer.isOpened()) {
             closeDialpadInternal(true);  // do the "closing" animation
