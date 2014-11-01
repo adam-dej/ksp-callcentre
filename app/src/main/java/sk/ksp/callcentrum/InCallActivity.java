@@ -66,8 +66,7 @@ public class InCallActivity extends Activity
 
         initInCallScreen();
 
-        // TODO get number from extra and create appropriate call session
-        // TODO this does not look right...
+        // TODO get number from extra and create an appropriate call session
         callSessionManager = new DummySession(new Handler(this));
 
     }
@@ -153,12 +152,10 @@ public class InCallActivity extends Activity
         mCallCard.showImage(R.drawable.picture_unknown);
     }
 
-    private boolean handleDialerKeyDown(int keyCode, KeyEvent event) {
-        Log.d(LOG_TAG, "handleDialerKeyDown: " + keyCode + "; " + event.toString());
+    public void handleDialerKeyDown(char dialerKey) {
+        Log.d(LOG_TAG, "handleDialerKeyDown: " + dialerKey);
 
-        callSessionManager.onButtonClick(keyCode);
-
-        return (isKeyEventAcceptableDTMF(event) && mDialer.onDialerKeyDown(event));
+        callSessionManager.onDialerClick(dialerKey);
     }
 
     @Override
@@ -170,10 +167,6 @@ public class InCallActivity extends Activity
         }
 
         super.onBackPressed();
-    }
-
-    boolean isKeyEventAcceptableDTMF(KeyEvent event) {
-        return (mDialer != null && mDialer.isKeyEventAcceptable(event));
     }
 
     /**
@@ -193,44 +186,6 @@ public class InCallActivity extends Activity
             if (VDBG) log("- onWindowFocusChanged: faking onDialerKeyUp()...");
             mDialer.onDialerKeyUp(null);
         }
-    }
-
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (DBG) log("onKeyUp(keycode " + keyCode + "; event " + event.toString() + ")...");
-
-        // push input to the dialer.
-        if ((mDialer != null) && (mDialer.onDialerKeyUp(event))){
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_CALL) {
-            // Always consume CALL to be sure the PhoneWindow won't do anything with it
-            return true;
-        }
-        return super.onKeyUp(keyCode, event);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-        if (DBG) log("onKeyDown(keycode " + keyCode + "; event " + event.toString() + ")...");
-
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_CAMERA:
-                // Disable the CAMERA button while in-call since it's too
-                // easy to press accidentally.
-                return true;
-
-            case KeyEvent.KEYCODE_MUTE:
-                // TODO do something else
-//                onMuteClick();
-                return true;
-        }
-
-        if (event.getRepeatCount() == 0 && handleDialerKeyDown(keyCode, event)) {
-            return true;
-        }
-
-        return super.onKeyDown(keyCode, event);
     }
 
     private void openDialpadInternal(boolean animate) {

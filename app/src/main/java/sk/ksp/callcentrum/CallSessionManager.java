@@ -26,5 +26,6 @@ public abstract class CallSessionManager {
     }
 
     public abstract void onButtonClick(int button);
+    public abstract void onDialerClick(char dialerButton);
 
 }
