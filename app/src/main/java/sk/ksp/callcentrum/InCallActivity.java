@@ -136,10 +136,62 @@ public class InCallActivity extends Activity
         mCallCard.showImage(R.drawable.picture_unknown);
         mCallCard.showName("KSP CallCentrum");
         mCallCard.showNumber("+427 942 427 472");
-//        mCallCard.showProviderInfo("KSP Network");
-        mCallCard.hideProviderInfo();
+        mCallCard.showProviderInfo("KSP Network");
+//        mCallCard.hideProviderInfo();
         mCallCard.showMessagebar("Dialing");
         mCallCard.updateTime("00:47");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1500);
+                    InCallActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mCallCard.hideProviderInfo();
+                        }
+                    });
+                    Thread.sleep(2000);
+                    InCallActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mCallCard.hideMessagebar();
+                        }
+                    });
+                    Thread.sleep(3000);
+                    InCallActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mCallCard.showMessagebar("Hanging up...");
+                        }
+                    });
+                    Thread.sleep(1000);
+                    InCallActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mCallCard.showMessagebar("Call ended...");
+                        }
+                    });
+                    Thread.sleep(1500);
+                    InCallActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mCallCard.hideMessagebar();
+                        }
+                    });
+                    Thread.sleep(500);
+                    InCallActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
 
     }

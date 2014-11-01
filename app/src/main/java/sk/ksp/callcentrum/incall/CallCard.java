@@ -133,7 +133,7 @@ public class CallCard extends LinearLayout {
     }
 
     public void hideProviderInfo() {
-        mProviderInfo.setVisibility(View.INVISIBLE);
+        mProviderInfo.setVisibility(View.GONE);
     }
 
     /**
