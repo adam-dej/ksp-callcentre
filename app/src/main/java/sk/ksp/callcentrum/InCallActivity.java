@@ -17,6 +17,7 @@
 package sk.ksp.callcentrum;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -39,7 +40,7 @@ import sk.ksp.callcentrum.sessions.DummySession;
  * Phone app "in call" screen.
  */
 public class InCallActivity extends Activity
-        implements View.OnClickListener, Handler.Callback {
+        implements Handler.Callback {
     private static final String LOG_TAG = "InCallActivity";
 
     private static final boolean DBG = true;
@@ -65,8 +66,7 @@ public class InCallActivity extends Activity
 
         initInCallScreen();
 
-        // TODO get number from extra and create appropriade call session
-
+        // TODO get number from extra and create appropriate call session
         // TODO this does not look right...
         callSessionManager = new DummySession(new Handler(this));
 
@@ -88,31 +88,48 @@ public class InCallActivity extends Activity
         super.onPause();
 
         mDialer.onDialerKeyUp(null);
-
         mDialer.stopDialerSession();
     }
 
     @Override
     public boolean handleMessage(Message message) {
-        switch (message.arg1) {
+        switch (message.what) {
             case CallSessionManager.MESSAGE_SHOW_IMAGE:
+                if (message.obj instanceof Integer) {
+                    mCallCard.showImage((Integer) message.obj);
+                } else if (message.obj instanceof Bitmap) {
+                    mCallCard.showImage((Bitmap) message.obj);
+                }
                 break;
             case CallSessionManager.MESSAGE_SHOW_NUMBER:
+                mCallCard.showNumber((String) message.obj);
                 break;
             case CallSessionManager.MESSAGE_SHOW_NAME:
+                mCallCard.showName((String) message.obj);
                 break;
             case CallSessionManager.MESSAGE_SHOW_MESSAGEBAR:
+                mCallCard.showMessagebar((String) message.obj);
                 break;
             case CallSessionManager.MESSAGE_HIDE_MESSAGEBAR:
+                mCallCard.hideMessagebar();
                 break;
             case CallSessionManager.MESSAGE_DIE:
                 finish();
                 break;
             case CallSessionManager.MESSAGE_UPDATE_TIME:
+                mCallCard.updateTime((String) message.obj);
                 break;
             case CallSessionManager.MESSAGE_SHOW_PROVIDER_INFO:
+                mCallCard.showProviderInfo((String) message.obj);
                 break;
             case CallSessionManager.MESSAGE_HIDE_PROVIDER_INFO:
+                mCallCard.hideProviderInfo();
+                break;
+            case CallSessionManager.MESSAGE_SHOW_DIALPAD:
+                openDialpadInternal(true);
+                break;
+            case CallSessionManager.MESSAGE_HIDE_DIALPAD:
+                closeDialpadInternal(true);
                 break;
         }
         return true;
@@ -127,86 +144,21 @@ public class InCallActivity extends Activity
         // Initialize the CallCard.
         mCallCard = (CallCard) findViewById(R.id.callCard);
 
-        initInCallTouchUi();
+        mInCallTouchUi = (InCallTouchUi) findViewById(R.id.inCallTouchUi);
+        mInCallTouchUi.setInCallScreenInstance(this);
 
         ViewStub stub = (ViewStub) findViewById(R.id.dtmf_twelve_key_dialer_stub);
         mDialer = new DTMFTwelveKeyDialer(this, stub);
 
-        // TODO temporary hack
         mCallCard.showImage(R.drawable.picture_unknown);
-        mCallCard.showName("KSP CallCentrum");
-        mCallCard.showNumber("+427 942 427 472");
-        mCallCard.showProviderInfo("KSP Network");
-//        mCallCard.hideProviderInfo();
-        mCallCard.showMessagebar("Dialing");
-        mCallCard.updateTime("00:47");
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1500);
-                    InCallActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mCallCard.hideProviderInfo();
-                        }
-                    });
-                    Thread.sleep(2000);
-                    InCallActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mCallCard.hideMessagebar();
-                        }
-                    });
-                    Thread.sleep(3000);
-                    InCallActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mCallCard.showMessagebar("Hanging up...");
-                        }
-                    });
-                    Thread.sleep(1000);
-                    InCallActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mCallCard.showMessagebar("Call ended...");
-                        }
-                    });
-                    Thread.sleep(1500);
-                    InCallActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mCallCard.hideMessagebar();
-                        }
-                    });
-                    Thread.sleep(500);
-                    InCallActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            finish();
-                        }
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-
     }
 
     private boolean handleDialerKeyDown(int keyCode, KeyEvent event) {
-
-        // TODO Really handle dialer key dow
-
         Log.d(LOG_TAG, "handleDialerKeyDown: " + keyCode + "; " + event.toString());
 
-        if (isKeyEventAcceptableDTMF(event)) {
-            return mDialer.onDialerKeyDown(event);
-        }
+        callSessionManager.onButtonClick(keyCode);
 
-        return false;
+        return (isKeyEventAcceptableDTMF(event) && mDialer.onDialerKeyDown(event));
     }
 
     @Override
@@ -220,7 +172,7 @@ public class InCallActivity extends Activity
         super.onBackPressed();
     }
 
-    boolean isKeyEventAcceptableDTMF (KeyEvent event) {
+    boolean isKeyEventAcceptableDTMF(KeyEvent event) {
         return (mDialer != null && mDialer.isKeyEventAcceptable(event));
     }
 
@@ -281,41 +233,6 @@ public class InCallActivity extends Activity
         return super.onKeyDown(keyCode, event);
     }
 
-    /**
-     * View.OnClickListener implementation.
-     *
-     * This method handles clicks from UI elements that use the
-     * InCallActivity itself as their OnClickListener.
-     *
-     * Note: Currently this method is used only for a few special buttons:
-     * - the mButtonManageConferenceDone "Back to call" button
-     * - the "dim" effect for the secondary call photo in CallCard as the second "swap" button
-     * - other OTASP-specific buttons managed by OtaUtils.java.
-     *
-     * *Most* in-call controls are handled by the handleOnscreenButtonClick() method, via the
-     * InCallTouchUi widget.
-     */
-    @Override
-    public void onClick(View view) {
-        int id = view.getId();
-        if (VDBG) log("onClick(View " + view + ", id " + id + ")...");
-    }
-
-    private void onHoldClick() {
-    }
-
-    private void onMuteClick() {
-    }
-
-    public void onOpenCloseDialpad() {
-        if (VDBG) log("onOpenCloseDialpad()...");
-        if (mDialer.isOpened()) {
-            closeDialpadInternal(true);  // do the "closing" animation
-        } else {
-            openDialpadInternal(true);  // do the "opening" animation
-        }
-    }
-
     private void openDialpadInternal(boolean animate) {
         mDialer.openDialer(animate);
     }
@@ -324,42 +241,34 @@ public class InCallActivity extends Activity
         mDialer.closeDialer(animate);
     }
 
-    /**
-     * Handles button clicks from the InCallTouchUi widget.
-     */
-    // TODO too many layers
     public void handleOnscreenButtonClick(int id) {
         if (DBG) log("handleOnscreenButtonClick(id " + id + ")...");
 
-        switch (id) {
-            // The other regular (single-tap) buttons used while in-call:
-            case R.id.holdButton:
-                // TODO do something else
-                onHoldClick();
-                break;
-            case R.id.swapButton:
-                break;
-            case R.id.endButton:
-                break;
-            case R.id.dialpadButton:
-                // TODO do something else
-//                onOpenCloseDialpad();
-                break;
-            case R.id.muteButton:
-                // TODO do something else
-//                onMuteClick();
-                break;
-            case R.id.addButton:
-                break;
-            case R.id.mergeButton:
-                break;
+        callSessionManager.onButtonClick(id);
+//
+//        switch (id) {
+//            // The other regular (single-tap) buttons used while in-call:
+//            case R.id.holdButton:
+//                break;
+//            case R.id.swapButton:
+//                break;
+//            case R.id.endButton:
+//                break;
+//            case R.id.dialpadButton:
+//                break;
+//            case R.id.muteButton:
+//                break;
+//            case R.id.addButton:
+//                break;
+//            case R.id.mergeButton:
+//                break;
+//
+//            default:
+//                Log.w(LOG_TAG, "handleOnscreenButtonClick: unexpected ID " + id);
+//                break;
+//        }
 
-            default:
-                Log.w(LOG_TAG, "handleOnscreenButtonClick: unexpected ID " + id);
-                break;
-        }
-
-        updateInCallTouchUi();
+//        updateInCallTouchUi();
     }
 
     /**
@@ -424,29 +333,12 @@ public class InCallActivity extends Activity
     }
 
     /**
-     * Initializes the in-call touch UI on devices that need it.
-     */
-    private void initInCallTouchUi() {
-        if (DBG) log("initInCallTouchUi()...");
-        mInCallTouchUi = (InCallTouchUi) findViewById(R.id.inCallTouchUi);
-        mInCallTouchUi.setInCallScreenInstance(this);
-
-    }
-
-    /**
      * Updates the state of the in-call touch UI.
      */
     private void updateInCallTouchUi() {
         if (mInCallTouchUi != null) {
             mInCallTouchUi.updateState();
         }
-    }
-
-    /**
-     * @return the InCallTouchUi widget
-     */
-    public InCallTouchUi getInCallTouchUi() {
-        return mInCallTouchUi;
     }
 
     @Override

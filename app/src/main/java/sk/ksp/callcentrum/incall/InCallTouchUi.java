@@ -126,33 +126,7 @@ public class InCallTouchUi extends FrameLayout
 
     @Override
     public void onClick(View view) {
-        int id = view.getId();
-        if (DBG) log("onClick(View " + view + ", id " + id + ")...");
-
-        switch (id) {
-            case R.id.addButton:
-            case R.id.mergeButton:
-            case R.id.endButton:
-                // TODO temporary
-                mInCallScreen.finish();
-                break;
-            case R.id.dialpadButton:
-                // TODO temporary
-                mInCallScreen.onOpenCloseDialpad();
-                break;
-            case R.id.muteButton:
-            case R.id.holdButton:
-            case R.id.swapButton:
-                mInCallScreen.handleOnscreenButtonClick(id);
-                break;
-
-            case R.id.audioButton:
-                break;
-
-            default:
-                Log.w(LOG_TAG, "onClick: unexpected click: View " + view + ", id " + id);
-                break;
-        }
+        mInCallScreen.handleOnscreenButtonClick(view.getId());
     }
 
     @Override
