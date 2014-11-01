@@ -94,6 +94,27 @@ public class InCallActivity extends Activity
 
     @Override
     public boolean handleMessage(Message message) {
+        switch (message.arg1) {
+            case CallSessionManager.MESSAGE_SHOW_IMAGE:
+                break;
+            case CallSessionManager.MESSAGE_SHOW_NUMBER:
+                break;
+            case CallSessionManager.MESSAGE_SHOW_NAME:
+                break;
+            case CallSessionManager.MESSAGE_SHOW_MESSAGEBAR:
+                break;
+            case CallSessionManager.MESSAGE_HIDE_MESSAGEBAR:
+                break;
+            case CallSessionManager.MESSAGE_DIE:
+                finish();
+                break;
+            case CallSessionManager.MESSAGE_UPDATE_TIME:
+                break;
+            case CallSessionManager.MESSAGE_SHOW_PROVIDER_INFO:
+                break;
+            case CallSessionManager.MESSAGE_HIDE_PROVIDER_INFO:
+                break;
+        }
         return true;
     }
 
@@ -105,7 +126,6 @@ public class InCallActivity extends Activity
 
         // Initialize the CallCard.
         mCallCard = (CallCard) findViewById(R.id.callCard);
-        mCallCard.setInCallScreenInstance(this);
 
         initInCallTouchUi();
 
@@ -113,7 +133,15 @@ public class InCallActivity extends Activity
         mDialer = new DTMFTwelveKeyDialer(this, stub);
 
         // TODO temporary hack
-        mCallCard.updateState();
+        mCallCard.showImage(R.drawable.picture_unknown);
+        mCallCard.showName("KSP CallCentrum");
+        mCallCard.showNumber("+427 942 427 472");
+//        mCallCard.showProviderInfo("KSP Network");
+        mCallCard.hideProviderInfo();
+        mCallCard.showMessagebar("Dialing");
+        mCallCard.updateTime("00:47");
+
+
     }
 
     private boolean handleDialerKeyDown(int keyCode, KeyEvent event) {
@@ -199,16 +227,6 @@ public class InCallActivity extends Activity
         }
 
         return super.onKeyDown(keyCode, event);
-    }
-
-    private void updateScreen() {
-        if (DBG) log("updateScreen()...");
-        updateInCallTouchUi();
-        mCallCard.updateState();
-
-        // Now that we're sure DTMF dialpad is in an appropriate state, reflect
-        // the dialpad state into CallCard
-        updateCallCardVisibilityPerDialerState(false);
     }
 
     /**
@@ -300,7 +318,6 @@ public class InCallActivity extends Activity
      * Note: During OTA calls or users' managing conference calls, we should *not* call this method
      * but manually manage both visibility.
      *
-     * @see #updateScreen()
      */
     private void updateCallCardVisibilityPerDialerState(boolean animate) {
         // We need to hide the CallCard while the dialpad is visible.

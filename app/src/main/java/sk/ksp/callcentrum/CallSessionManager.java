@@ -29,6 +29,9 @@ public abstract class CallSessionManager {
     public static final int MESSAGE_SHOW_MESSAGEBAR = 3;
     public static final int MESSAGE_HIDE_MESSAGEBAR = 4;
     public static final int MESSAGE_DIE = 5;
+    public static final int MESSAGE_UPDATE_TIME = 6;
+    public static final int MESSAGE_SHOW_PROVIDER_INFO = 7;
+    public static final int MESSAGE_HIDE_PROVIDER_INFO = 8;
     // To annoy the user, codes > 50
     public static final int MESSAGE_SET_RTL = 51;
     public static final int MESSAGE_SET_LTR = 52;

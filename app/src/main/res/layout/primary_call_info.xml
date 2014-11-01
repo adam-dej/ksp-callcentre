@@ -115,6 +115,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/incall_call_banner_text_color"
             android:singleLine="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:visibility="invisible" />
 
         <!-- Call type indication: a special label and/or branding
