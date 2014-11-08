@@ -30,15 +30,14 @@ import android.widget.LinearLayout;
  *
  * See dtmf_twelve_key_dialer_view.xml.
  */
-class DTMFTwelveKeyDialerView extends LinearLayout {
+public class DTMFTwelveKeyDialerView extends LinearLayout {
 
     private static final String LOG_TAG = "PHONE/DTMFTwelveKeyDialerView";
     private static final boolean DBG = false;
 
     private DTMFTwelveKeyDialer mDialer;
 
-
-    public DTMFTwelveKeyDialerView (Context context) {
+    public DTMFTwelveKeyDialerView(Context context) {
         super(context);
     }
 
