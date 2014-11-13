@@ -60,3 +60,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
+
+if (project.hasProperty("KSPCallCentrum.signing") && new File(project.property("KSPCallCentrum.signing") + ".gradle").exists()) {
+    apply from: project.property("KSPCallCentrum.signing") + ".gradle";
+}
