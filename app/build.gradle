@@ -3,7 +3,6 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 20
     buildToolsVersion "21.1.1"
-
     defaultConfig {
         applicationId "sk.ksp.callcentrum"
         minSdkVersion 16
@@ -15,6 +14,45 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        druzinkaTest {
+            targetSdkVersion 19
+            versionName '1.0-veduci-test'
+            buildConfigField 'String', 'druzinkaName', '"veduci-test"'
+        }
+        druzinka1 {
+            minSdkVersion 16
+            applicationId 'sk.ksp.callcentrum'
+            targetSdkVersion 19
+            versionCode 1
+            versionName '1.0-druzinka1'
+            buildConfigField 'String', 'druzinkaName', '"druzinka1"'
+        }
+        druzinka2 {
+            minSdkVersion 16
+            applicationId 'sk.ksp.callcentrum'
+            targetSdkVersion 19
+            versionCode 1
+            versionName '1.0-druzinka2'
+            buildConfigField 'String', 'druzinkaName', '"druzinka2"'
+        }
+        druzinka3 {
+            minSdkVersion 16
+            applicationId 'sk.ksp.callcentrum'
+            targetSdkVersion 19
+            versionCode 1
+            versionName '1.0-druzinka3'
+            buildConfigField 'String', 'druzinkaName', '"druzinka3"'
+        }
+        druzinka4 {
+            minSdkVersion 16
+            applicationId 'sk.ksp.callcentrum'
+            targetSdkVersion 19
+            versionCode 1
+            versionName '1.0-druzinka4'
+            buildConfigField 'String', 'druzinkaName', '"druzinka4"'
         }
     }
 }
