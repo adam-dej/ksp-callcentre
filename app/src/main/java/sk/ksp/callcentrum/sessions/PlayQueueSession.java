@@ -1,6 +1,9 @@
 package sk.ksp.callcentrum.sessions;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.Log;
 
@@ -8,10 +11,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import sk.ksp.callcentrum.BuildConfig;
 import sk.ksp.callcentrum.CallSessionManager;
@@ -48,11 +54,12 @@ public class PlayQueueSession extends CallSessionManager {
 
     private TimerUpdateRunnable timerUpdateRunnable;
 
-    private class ServerCommThread implements Runnable {
+    private class ServerCommThread implements Runnable, MediaQueue.MediaQueueEmptyCallback {
 
         private Socket commSocket;
         private OutputStreamWriter out;
         private BufferedReader  in;
+        private MediaQueue queue = new MediaQueue(this, context);
 
         private int readerState = 0;
 
@@ -134,7 +141,11 @@ public class PlayQueueSession extends CallSessionManager {
                             }
                             break;
                         case STATE_NORMAL:
-
+                            if (line.startsWith("play")) {
+                                queue.push(line.split(" ")[1]);
+                            } else if ("clear".equals(line)) {
+                                queue.clear();
+                            }
                             break;
                     }
 
@@ -156,12 +167,20 @@ public class PlayQueueSession extends CallSessionManager {
             }
         }
 
+        @Override
+        public void mediaQueueEmpty() {
+            try {
+                serverWrite("empty");
+            } catch (IOException e) {
+                handleCommFailure(e);
+            }
+        }
     }
 
     private ServerCommThread serverCommThread;
 
-    public PlayQueueSession(final Handler uiHandler, final Resources resources, String phoneNumber) {
-        super(uiHandler, resources);
+    public PlayQueueSession(final Handler uiHandler, Context context, String phoneNumber) {
+        super(uiHandler, context);
         if (phoneNumber == null) {
             Log.wtf("PlayQueueSession", "phoneNumber is null!");
             displayInternalError("1");
@@ -186,6 +205,67 @@ public class PlayQueueSession extends CallSessionManager {
             }).start();
             serverCommThread = new ServerCommThread();
             new Thread(serverCommThread).start();
+        }
+    }
+
+    private static class MediaQueue implements MediaPlayer.OnCompletionListener {
+
+        private MediaPlayer mediaPlayer;
+        private Context context;
+
+        interface MediaQueueEmptyCallback {
+            public void mediaQueueEmpty();
+        }
+
+        private MediaQueueEmptyCallback mqeCallback;
+
+        private Queue<String> media;
+
+        private void play(String str) {
+            try {
+                Class res = R.raw.class;
+                Field field = res.getField(str);
+                int soundID = field.getInt(null);
+                mediaPlayer = MediaPlayer.create(context, soundID);
+                mediaPlayer.setOnCompletionListener(this);
+                mediaPlayer.start();
+            }
+            catch (Exception e) {
+                if (BuildConfig.DEBUG) {
+                    Log.w("MediaQueue", "Sound does not exist: " + str + "!");
+                }
+            }
+        }
+
+        public MediaQueue(MediaQueueEmptyCallback mqeCallback, Context context) {
+            media = new ConcurrentLinkedQueue<String>();
+            this.mqeCallback = mqeCallback;
+            this.context = context;
+        }
+
+        public void push(String sound) {
+            media.add(sound);
+            if (mediaPlayer == null || !mediaPlayer.isPlaying()) {
+                play(sound);
+                media.remove();
+            }
+        }
+
+        public void clear() {
+            media.clear();
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+            }
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mediaPlayer) {
+            mediaPlayer = null;
+            if (!media.isEmpty()) {
+                play(media.remove());
+            } else {
+                mqeCallback.mediaQueueEmpty();
+            }
         }
     }
 

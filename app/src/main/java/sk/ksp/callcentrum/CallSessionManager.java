@@ -1,5 +1,6 @@
 package sk.ksp.callcentrum;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
 
@@ -22,10 +23,12 @@ public abstract class CallSessionManager {
 
     protected Handler uiHandler;
     protected Resources resources;
+    protected Context context;
 
-    public CallSessionManager(Handler uiHandler, Resources resources) {
+    public CallSessionManager(Handler uiHandler, Context context) {
         this.uiHandler = uiHandler;
-        this.resources = resources;
+        this.resources = context.getResources();
+        this.context = context;
     }
 
     public abstract void onButtonClick(int button);
