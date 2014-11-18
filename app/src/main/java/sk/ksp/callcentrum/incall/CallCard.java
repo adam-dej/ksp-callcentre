@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import sk.ksp.callcentrum.BuildConfig;
 import sk.ksp.callcentrum.R;
 
 
@@ -40,7 +41,7 @@ import sk.ksp.callcentrum.R;
  */
 public class CallCard extends LinearLayout {
     private static final String LOG_TAG = "CallCard";
-    private static final boolean DBG = true;
+    private static final boolean DBG = BuildConfig.DEBUG;
 
     /**
      * Container for both provider info and call state. This will take care of showing/hiding

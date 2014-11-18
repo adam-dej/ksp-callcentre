@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.Window;
@@ -43,8 +42,8 @@ public class InCallActivity extends Activity
         implements Handler.Callback {
     private static final String LOG_TAG = "InCallActivity";
 
-    private static final boolean DBG = true;
-    private static final boolean VDBG = true;
+    private static final boolean DBG = BuildConfig.DEBUG;
+    private static final boolean VDBG = BuildConfig.DEBUG;
 
     /** Main in-call UI elements. */
     private CallCard mCallCard;

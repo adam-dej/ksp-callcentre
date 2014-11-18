@@ -22,6 +22,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.LinearLayout;
 
+import sk.ksp.callcentrum.BuildConfig;
+
 /**
  * DTMFTwelveKeyDialerView is the view logic that the DTMFDialer uses.
  * This is really a thin wrapper around Linear Layout that intercepts
@@ -33,7 +35,7 @@ import android.widget.LinearLayout;
 public class DTMFTwelveKeyDialerView extends LinearLayout {
 
     private static final String LOG_TAG = "PHONE/DTMFTwelveKeyDialerView";
-    private static final boolean DBG = false;
+    private static final boolean DBG = BuildConfig.DEBUG;
 
     private DTMFTwelveKeyDialer mDialer;
 

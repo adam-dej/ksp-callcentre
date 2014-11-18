@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import sk.ksp.callcentrum.BuildConfig;
 import sk.ksp.callcentrum.InCallActivity;
 import sk.ksp.callcentrum.R;
 
@@ -49,7 +50,7 @@ import sk.ksp.callcentrum.R;
 public class DTMFTwelveKeyDialer implements View.OnTouchListener, View.OnKeyListener,
         View.OnHoverListener, View.OnClickListener {
     private static final String LOG_TAG = "DTMFTwelveKeyDialer";
-    private static final boolean DBG = true;
+    private static final boolean DBG = BuildConfig.DEBUG;
 
     // events
     private static final int PHONE_DISCONNECT = 100;

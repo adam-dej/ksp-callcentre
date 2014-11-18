@@ -28,6 +28,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import sk.ksp.callcentrum.BuildConfig;
 import sk.ksp.callcentrum.InCallActivity;
 import sk.ksp.callcentrum.R;
 
@@ -40,7 +41,7 @@ import sk.ksp.callcentrum.R;
 public class InCallTouchUi extends FrameLayout
         implements View.OnClickListener, View.OnLongClickListener {
     private static final String LOG_TAG = "InCallTouchUi";
-    private static final boolean DBG = true;
+    private static final boolean DBG = BuildConfig.DEBUG;
 
     /**
      * Reference to the InCallScreen activity that owns us.  This may be
