@@ -20,7 +20,7 @@ android {
         druzinkaTest {
             targetSdkVersion 19
             versionName '1.0-veduci-test'
-            buildConfigField 'String', 'druzinkaName', '"veduci-test"'
+            buildConfigField 'String', 'druzinkaName', '"0"'
             buildConfigField 'String', 'serverAddress', 'null'
         }
         druzinka1 {
@@ -29,7 +29,7 @@ android {
             targetSdkVersion 19
             versionCode 1
             versionName '1.0-druzinka1'
-            buildConfigField 'String', 'druzinkaName', '"druzinka1"'
+            buildConfigField 'String', 'druzinkaName', '"1"'
             buildConfigField 'String', 'serverAddress', '"192.168.0.101:1234"'
         }
         druzinka2 {
@@ -38,7 +38,7 @@ android {
             targetSdkVersion 19
             versionCode 1
             versionName '1.0-druzinka2'
-            buildConfigField 'String', 'druzinkaName', '"druzinka2"'
+            buildConfigField 'String', 'druzinkaName', '"2"'
             buildConfigField 'String', 'serverAddress', '"192.168.0.101:1234"'
         }
         druzinka3 {
@@ -47,7 +47,7 @@ android {
             targetSdkVersion 19
             versionCode 1
             versionName '1.0-druzinka3'
-            buildConfigField 'String', 'druzinkaName', '"druzinka3"'
+            buildConfigField 'String', 'druzinkaName', '"3"'
             buildConfigField 'String', 'serverAddress', '"192.168.0.101:1234"'
         }
         druzinka4 {
@@ -56,7 +56,7 @@ android {
             targetSdkVersion 19
             versionCode 1
             versionName '1.0-druzinka4'
-            buildConfigField 'String', 'druzinkaName', '"druzinka4"'
+            buildConfigField 'String', 'druzinkaName', '"4"'
             buildConfigField 'String', 'serverAddress', '"192.168.0.101:1234"'
         }
     }
