@@ -32,7 +32,7 @@ import sk.ksp.callcentrum.incall.AnimationUtils;
 import sk.ksp.callcentrum.incall.CallCard;
 import sk.ksp.callcentrum.incall.DTMFTwelveKeyDialer;
 import sk.ksp.callcentrum.incall.InCallTouchUi;
-import sk.ksp.callcentrum.sessions.DummySession;
+import sk.ksp.callcentrum.sessions.PlayQueueSession;
 
 
 /**
@@ -65,8 +65,7 @@ public class InCallActivity extends Activity
 
         initInCallScreen();
 
-        // TODO get number from extra and create an appropriate call session
-        callSessionManager = new DummySession(new Handler(this));
+        callSessionManager = new PlayQueueSession(new Handler(this), getIntent().getExtras().getString("EXTRA_NUMBER"));
 
     }
 
