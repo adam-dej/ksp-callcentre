@@ -295,4 +295,8 @@
     <string name="dialog_debug">enter server IP</string>
     <string name="ok">OK</string>
 
+    <!-- KSP InCall Strings -->
+    <string name="ksp_network">KSP Network</string>
+    <string name="ksp_internal_phone_error">Phone error! Kontaktujte vedúcich!</string>
+
 </resources>

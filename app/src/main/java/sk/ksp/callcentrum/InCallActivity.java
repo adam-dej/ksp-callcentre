@@ -65,7 +65,9 @@ public class InCallActivity extends Activity
 
         initInCallScreen();
 
-        callSessionManager = new PlayQueueSession(new Handler(this), getIntent().getExtras().getString("EXTRA_NUMBER"));
+        callSessionManager = new PlayQueueSession(new Handler(this),
+                getResources(),
+                getIntent().getExtras().getString("EXTRA_NUMBER"));
 
     }
 

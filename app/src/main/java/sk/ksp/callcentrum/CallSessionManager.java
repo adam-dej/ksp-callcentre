@@ -1,5 +1,6 @@
 package sk.ksp.callcentrum;
 
+import android.content.res.Resources;
 import android.os.Handler;
 
 public abstract class CallSessionManager {
@@ -20,9 +21,11 @@ public abstract class CallSessionManager {
     public static final int MESSAGE_SET_LTR = 52;
 
     protected Handler uiHandler;
+    protected Resources resources;
 
-    public CallSessionManager(Handler uiHandler) {
+    public CallSessionManager(Handler uiHandler, Resources resources) {
         this.uiHandler = uiHandler;
+        this.resources = resources;
     }
 
     public abstract void onButtonClick(int button);

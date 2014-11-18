@@ -1,9 +1,8 @@
 package sk.ksp.callcentrum.sessions;
 
+import android.content.res.Resources;
 import android.os.Handler;
 import android.util.Log;
-
-import java.util.concurrent.TimeUnit;
 
 import sk.ksp.callcentrum.CallSessionManager;
 import sk.ksp.callcentrum.R;
@@ -40,8 +39,8 @@ public class DummySession extends CallSessionManager {
 
     private TimerUpdateRunnable timerUpdateRunnable;
 
-    public DummySession(final Handler uiHandler) {
-        super(uiHandler);
+    public DummySession(final Handler uiHandler, Resources resources) {
+        super(uiHandler, resources);
         timerUpdateRunnable = new TimerUpdateRunnable();
         new Thread(new Runnable() {
             @Override
