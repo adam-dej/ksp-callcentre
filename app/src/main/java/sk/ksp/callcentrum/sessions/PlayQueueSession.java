@@ -1,8 +1,6 @@
 package sk.ksp.callcentrum.sessions;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.Log;
@@ -60,6 +58,7 @@ public class PlayQueueSession extends CallSessionManager {
         private OutputStreamWriter out;
         private BufferedReader  in;
         private MediaQueue queue = new MediaQueue(this, context);
+        private boolean properTermination;
 
         private int readerState = 0;
 
@@ -104,6 +103,7 @@ public class PlayQueueSession extends CallSessionManager {
 
         public void killComm() {
             try {
+                properTermination = true;
                 commSocket.close();
             } catch (IOException e) {
             }
@@ -145,6 +145,17 @@ public class PlayQueueSession extends CallSessionManager {
                                 queue.push(line.split(" ")[1]);
                             } else if ("clear".equals(line)) {
                                 queue.clear();
+                            } else if (line.startsWith("image")) {
+                                String img = line.split(" ")[1];
+                                if ("old".equals(img)) {
+                                    uiHandler.obtainMessage(MESSAGE_SHOW_IMAGE, R.drawable.call_alf).sendToTarget();
+                                } else if ("child".equals(img)) {
+                                    uiHandler.obtainMessage(MESSAGE_SHOW_IMAGE, R.drawable.call_child).sendToTarget();
+                                } else if ("alf".equals(img)) {
+                                    uiHandler.obtainMessage(MESSAGE_SHOW_IMAGE, R.drawable.call_old).sendToTarget();
+                                }
+                            } else if (line.startsWith("name")) {
+                                uiHandler.obtainMessage(MESSAGE_SHOW_NAME, line.replaceFirst("name ", "")).sendToTarget();
                             }
                             break;
                     }
@@ -155,11 +166,12 @@ public class PlayQueueSession extends CallSessionManager {
                 Log.e("PlayQueueSession", e.toString());
                 killCallWithMessage(resources.getString(R.string.ksp_no_signal));
             } catch (IOException e) {
-                if (e instanceof SocketException) {
-                    // Proper call termination
+                if (properTermination) {
                     readerState = STATE_DEAD;
                     killCallWithMessage(resources.getString(R.string.ksp_call_terminated));
-                    timerUpdateRunnable.stopTimer();
+                    if (timerUpdateRunnable != null) {
+                        timerUpdateRunnable.stopTimer();
+                    }
                 } else {
                     Log.e("PlayQueueSession", e.toString());
                     killCallWithMessage(resources.getString(R.string.ksp_no_signal));
