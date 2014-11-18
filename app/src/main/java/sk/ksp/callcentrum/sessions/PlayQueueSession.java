@@ -244,7 +244,7 @@ public class PlayQueueSession extends CallSessionManager {
             }
             catch (Exception e) {
                 if (BuildConfig.DEBUG) {
-                    Log.w("MediaQueue", "Sound does not exist: " + str + "!");
+                    Log.w("MediaQueue", "Sound does not exist: " + str + "! (" + e.toString() + ")");
                 }
             }
         }
@@ -272,6 +272,7 @@ public class PlayQueueSession extends CallSessionManager {
 
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
+            mediaPlayer.release();
             mediaPlayer = null;
             if (!media.isEmpty()) {
                 play(media.remove());
