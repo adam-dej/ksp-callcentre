@@ -17,9 +17,11 @@
 package sk.ksp.callcentrum;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -28,11 +30,13 @@ import android.provider.CallLog.Calls;
 import android.speech.RecognizerIntent;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -100,6 +104,10 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
 
         getActionBar().hide();
 
+        if (DataStorage.getStorage().getServerAddress() == null) {
+            askForAddress();
+        }
+
         // Add the favorites fragment, and the dialpad fragment, but only if savedInstanceState
         // is null. Otherwise the fragment manager takes care of recreating these fragments.
         if (savedInstanceState == null) {
@@ -165,6 +173,27 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
             transaction.hide(mDialpadFragment);
             transaction.commit();
         }
+    }
+
+    public void askForAddress() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.debug_ask_for_ip, null);
+        final TextView ipEditText = (TextView)dialogView.findViewById(R.id.dialog_ip_addr);
+        final TextView ipEditPort = (TextView)dialogView.findViewById(R.id.dialog_port);
+        builder.setView(dialogView)
+                // Add action buttons
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        DataStorage storage = DataStorage.getStorage();
+                        storage.setServerAddress(ipEditText.getText().toString());
+                        storage.setServerPort(ipEditPort.getText().toString());
+                        dialog.dismiss();
+                    }
+                })
+                .setTitle(R.string.dialog_debug);
+        builder.create().show();
     }
 
     @Override

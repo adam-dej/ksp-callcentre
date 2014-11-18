@@ -290,4 +290,9 @@
     -->
     <string name="description_image_button_pound">pound</string>
 
+    <string name="dialog_ip">IP address</string>
+    <string name="dialog_port">Port</string>
+    <string name="dialog_debug">enter server IP</string>
+    <string name="ok">OK</string>
+
 </resources>
