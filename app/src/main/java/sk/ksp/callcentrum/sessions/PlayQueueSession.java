@@ -12,7 +12,6 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -105,6 +104,7 @@ public class PlayQueueSession extends CallSessionManager {
             try {
                 properTermination = true;
                 commSocket.close();
+                queue.clear();
             } catch (IOException e) {
             }
         }
@@ -163,9 +163,11 @@ public class PlayQueueSession extends CallSessionManager {
                 }
 
             } catch (UnknownHostException e) {
+                queue.clear();
                 Log.e("PlayQueueSession", e.toString());
                 killCallWithMessage(resources.getString(R.string.ksp_no_signal));
             } catch (IOException e) {
+                queue.clear();
                 if (properTermination) {
                     readerState = STATE_DEAD;
                     killCallWithMessage(resources.getString(R.string.ksp_call_terminated));
