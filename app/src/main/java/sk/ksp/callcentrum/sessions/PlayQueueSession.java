@@ -1,6 +1,7 @@
 package sk.ksp.callcentrum.sessions;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.Log;
@@ -240,14 +241,35 @@ public class PlayQueueSession extends CallSessionManager {
                 Class res = R.raw.class;
                 Field field = res.getField(str);
                 int soundID = field.getInt(null);
-                mediaPlayer = MediaPlayer.create(context, soundID);
-                mediaPlayer.setOnCompletionListener(this);
+
+                if (mediaPlayer == null) {
+                    mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setOnCompletionListener(this);
+                } else {
+                    mediaPlayer.reset();
+                }
+
+                AssetFileDescriptor afd = context.getResources().openRawResourceFd(soundID);
+                mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getDeclaredLength());
+                mediaPlayer.prepare();
+                if (BuildConfig.DEBUG) {
+                    Log.i("MediaQueue", "Playback started: " + str);
+                }
                 mediaPlayer.start();
+                afd.close();
             }
-            catch (Exception e) {
+            catch (NoSuchFieldException e) {
                 if (BuildConfig.DEBUG) {
                     Log.w("MediaQueue", "Sound does not exist: " + str + "! (" + e.toString() + ")");
                 }
+                onCompletion(null);
+            } catch (IllegalAccessException e) {
+                if (BuildConfig.DEBUG) {
+                    Log.w("MediaQueue", "Sound does not exist: " + str + "! (" + e.toString() + ")");
+                }
+                onCompletion(null);
+            } catch (IOException e) {
+                Log.wtf("MediaQueue", e.toString());
             }
         }
 
@@ -259,23 +281,32 @@ public class PlayQueueSession extends CallSessionManager {
 
         public void push(String sound) {
             media.add(sound);
-            if (mediaPlayer == null || !mediaPlayer.isPlaying()) {
+            try {
+                if (mediaPlayer == null || !mediaPlayer.isPlaying()) {
+                    play(sound);
+                    if (!media.isEmpty()) media.remove();
+                }
+            } catch (IllegalStateException e) {
                 play(sound);
-                media.remove();
+                if (!media.isEmpty()) media.remove();
             }
         }
 
         public void clear() {
             media.clear();
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
+            try {
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+            } catch (IllegalStateException e) {
             }
         }
 
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
-            mediaPlayer.release();
-            mediaPlayer = null;
+            if (BuildConfig.DEBUG) {
+                Log.i("MediaQueue", "Playback completed");
+            }
             if (!media.isEmpty()) {
                 play(media.remove());
             } else {
