@@ -1,7 +1,6 @@
 package sk.ksp.callcentrum.sessions;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Handler;
 import android.util.Log;
 
@@ -96,5 +95,10 @@ public class DummySession extends CallSessionManager {
     @Override
     public void onDialerClick(char dialerButton) {
         Log.d("DummySession", "onDialerClick" + dialerButton);
+    }
+
+    @Override
+    public void onPhoneShake() {
+
     }
 }

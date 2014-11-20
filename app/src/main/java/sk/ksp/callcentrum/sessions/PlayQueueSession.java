@@ -101,6 +101,16 @@ public class PlayQueueSession extends CallSessionManager {
             }
         }
 
+        public void sendShakeEvent() {
+            if (readerState == STATE_NORMAL) {
+                try {
+                    serverWrite("shake");
+                } catch (IOException e) {
+                    handleCommFailure(e);
+                }
+            }
+        }
+
         public void killComm() {
             try {
                 properTermination = true;
@@ -366,5 +376,12 @@ public class PlayQueueSession extends CallSessionManager {
     @Override
     public void onDialerClick(char dialerButton) {
         serverCommThread.sendButtonPress(dialerButton);
+    }
+
+    @Override
+    public void onPhoneShake() {
+        if (serverCommThread != null) {
+            serverCommThread.sendShakeEvent();
+        }
     }
 }

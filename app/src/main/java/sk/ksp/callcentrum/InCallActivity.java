@@ -17,7 +17,12 @@
 package sk.ksp.callcentrum;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -53,6 +58,31 @@ public class InCallActivity extends Activity
 
     private CallSessionManager callSessionManager;
 
+    private SensorManager mSensorManager;
+    private float mAccel;
+    private float mAccelCurrent;
+    private float mAccelLast;
+    private static final float SHAKE_THRESHOLD = 12f;
+
+    private final SensorEventListener mSensorListener = new SensorEventListener() {
+
+        public void onSensorChanged(SensorEvent se) {
+            float x = se.values[0];
+            float y = se.values[1];
+            float z = se.values[2];
+            mAccelLast = mAccelCurrent;
+            mAccelCurrent = (float) Math.sqrt((double) (x*x + y*y + z*z));
+            float delta = mAccelCurrent - mAccelLast;
+            mAccel = mAccel * 0.9f + delta; // perform low-cut filter
+            if (mAccel > SHAKE_THRESHOLD) {
+                callSessionManager.onPhoneShake();
+            }
+        }
+
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+
     @Override
     protected void onCreate(Bundle icicle) {
         Log.i(LOG_TAG, "onCreate()...  this = " + this);
@@ -69,6 +99,12 @@ public class InCallActivity extends Activity
                 this,
                 getIntent().getExtras().getString("EXTRA_NUMBER"));
 
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        mAccel = 0.00f;
+        mAccelCurrent = SensorManager.GRAVITY_EARTH;
+        mAccelLast = SensorManager.GRAVITY_EARTH;
+
     }
 
     @Override
@@ -77,6 +113,7 @@ public class InCallActivity extends Activity
         super.onResume();
 
         takeKeyEvents(true);
+        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 
         if (VDBG) log("onResume() done.");
     }
@@ -88,6 +125,7 @@ public class InCallActivity extends Activity
 
         mDialer.onDialerKeyUp(null);
         mDialer.stopDialerSession();
+        mSensorManager.unregisterListener(mSensorListener);
     }
 
     @Override
