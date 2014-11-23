@@ -300,6 +300,7 @@
     <string name="ksp_internal_phone_error">Phone error! Kontaktujte vedúcich!</string>
     <string name="ksp_dialing">Dialing…</string>
     <string name="ksp_no_signal">No signal! (Are you on KSP wifi?)</string>
+    <string name="ksp_lost_signal">Lost signal! (Are on KSP wifi?)</string>
     <string name="ksp_call_terminated">Call terminated</string>
 
 </resources>
