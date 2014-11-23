@@ -13,6 +13,7 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -55,7 +56,7 @@ public class PlayQueueSession extends CallSessionManager {
 
         private Socket commSocket;
         private OutputStreamWriter out;
-        private BufferedReader  in;
+        private BufferedReader in;
         private MediaQueue queue = new MediaQueue(this, context, this);
         private boolean properTermination;
 
@@ -65,7 +66,7 @@ public class PlayQueueSession extends CallSessionManager {
         private static final int STATE_NORMAL = 1;
         private static final int STATE_DEAD = 2;
 
-        private void serverWrite(String line) throws IOException{
+        private void serverWrite(String line) throws IOException {
             if (BuildConfig.DEBUG) {
                 Log.d("PlayQueueSession", "-> " + line);
             }
@@ -153,7 +154,7 @@ public class PlayQueueSession extends CallSessionManager {
                             break;
                         case STATE_NORMAL:
                             if (line.startsWith("play")) {
-                                queue.push(line.split(" ")[1]);
+                                queue.push(line.replace("play ", "").split(" "));
                             } else if ("clear".equals(line)) {
                                 queue.clear();
                             } else if (line.startsWith("image")) {
@@ -168,7 +169,7 @@ public class PlayQueueSession extends CallSessionManager {
                             } else if (line.startsWith("name")) {
                                 uiHandler.obtainMessage(MESSAGE_SHOW_NAME, line.replaceFirst("name ", "")).sendToTarget();
                             } else if ("shutdown".equals(line)) {
-                                queue.push("shutdown");
+                                queue.push(new String[] {"shutdown"});
                             }
                             break;
                     }
@@ -237,7 +238,7 @@ public class PlayQueueSession extends CallSessionManager {
 
     private static class MediaQueue implements MediaPlayer.OnCompletionListener {
 
-        private MediaPlayer mediaPlayer;
+        private HashMap<String, MediaPlayer> mediaPlayerHashMap;
         private Context context;
         private ServerCommThread parent;
 
@@ -250,40 +251,22 @@ public class PlayQueueSession extends CallSessionManager {
         private Queue<String> media;
 
         private void play(String str) {
-            try {
 
-                if ("shutdown".equals(str)) {
-                    parent.killComm();
-                }
-
-                int soundID = context.getResources().getIdentifier(str, "raw", "sk.ksp.callcentrum");
-
-                if (soundID == 0) {
-                    if (BuildConfig.DEBUG) {
-                        Log.w("MediaQueue", "Sound does not exist: " + str + "!");
-                    }
-                    onCompletion(null);
-                    return;
-                }
-
-                if (mediaPlayer == null) {
-                    mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setOnCompletionListener(this);
-                } else {
-                    mediaPlayer.reset();
-                }
-
-                AssetFileDescriptor afd = context.getResources().openRawResourceFd(soundID);
-                mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getDeclaredLength());
-                mediaPlayer.prepare();
+            if ("shutdown".equals(str)) {
                 if (BuildConfig.DEBUG) {
-                    Log.i("MediaQueue", "Playback started: " + str);
+                    Log.d("MediaQueue", "Shutdown. Killing...");
                 }
-                mediaPlayer.start();
-                afd.close();
-            } catch (IOException e) {
-                Log.wtf("MediaQueue", e.toString());
+                parent.killComm();
             }
+
+            if (BuildConfig.DEBUG) {
+                Log.d("MediaQueue", "Playback started: " + str);
+            }
+            MediaPlayer mp = mediaPlayerHashMap.get(str);
+            if (mp != null) {
+                mp.start();
+            }
+
         }
 
         public MediaQueue(MediaQueueEmptyCallback mqeCallback, Context context, ServerCommThread parent) {
@@ -291,29 +274,53 @@ public class PlayQueueSession extends CallSessionManager {
             this.mqeCallback = mqeCallback;
             this.context = context;
             this.parent = parent;
+            mediaPlayerHashMap = new HashMap<String, MediaPlayer>();
         }
 
-        public void push(String sound) {
-            media.add(sound);
-            try {
-                if (mediaPlayer == null || !mediaPlayer.isPlaying()) {
-                    play(sound);
-                    if (!media.isEmpty()) media.remove();
+        public void push(String[] sounds) {
+            clear();
+            for (String sound : sounds) {
+                int soundID = context.getResources().getIdentifier(sound, "raw", "sk.ksp.callcentrum");
+
+                if (soundID == 0 && !"shutdown".equals(sound)) {
+                    if (BuildConfig.DEBUG) {
+                        Log.w("MediaQueue", "Sound does not exist: " + sound + "!");
+                    }
+                } else {
+                    media.add(sound);
+                    if (!"shutdown".equals(sound)) {
+                        try {
+                            AssetFileDescriptor afd = context.getResources().openRawResourceFd(soundID);
+                            MediaPlayer mediaPlayer = new MediaPlayer();
+                            mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getDeclaredLength());
+                            mediaPlayer.prepare();
+                            mediaPlayer.setOnCompletionListener(this);
+                            mediaPlayerHashMap.put(sound, mediaPlayer);
+                            afd.close();
+                        } catch (IOException e) {
+                            Log.wtf("MediaQueue", "IOException: " + e.toString());
+                            e.printStackTrace();
+                        }
+                    }
                 }
-            } catch (IllegalStateException e) {
-                play(sound);
-                if (!media.isEmpty()) media.remove();
+            }
+
+            if (!media.isEmpty()) {
+                play(media.remove());
             }
         }
 
         public void clear() {
             media.clear();
-            try {
-                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                    mediaPlayer.stop();
+                for(MediaPlayer mp : mediaPlayerHashMap.values()) {
+                    try {
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                        }
+                        mp.release();
+                    } catch (IllegalStateException e) {
+                    }
                 }
-            } catch (IllegalStateException e) {
-            }
         }
 
         @Override
