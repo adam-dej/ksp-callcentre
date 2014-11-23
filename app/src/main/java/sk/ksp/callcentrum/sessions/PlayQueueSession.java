@@ -56,7 +56,7 @@ public class PlayQueueSession extends CallSessionManager {
         private Socket commSocket;
         private OutputStreamWriter out;
         private BufferedReader  in;
-        private MediaQueue queue = new MediaQueue(this, context);
+        private MediaQueue queue = new MediaQueue(this, context, this);
         private boolean properTermination;
 
         private int readerState = 0;
@@ -139,7 +139,8 @@ public class PlayQueueSession extends CallSessionManager {
                     String line = serverRead();
                     if (line == null) {
                         readerState = STATE_DEAD;
-                        killCallWithMessage(resources.getString(R.string.ksp_call_terminated));
+                        killCallWithMessage(resources.getString(R.string.ksp_lost_signal));
+                        queue.clear();
                         timerUpdateRunnable.stopTimer();
                         break;
                     }
@@ -166,6 +167,8 @@ public class PlayQueueSession extends CallSessionManager {
                                 }
                             } else if (line.startsWith("name")) {
                                 uiHandler.obtainMessage(MESSAGE_SHOW_NAME, line.replaceFirst("name ", "")).sendToTarget();
+                            } else if ("shutdown".equals(line)) {
+                                queue.push("shutdown");
                             }
                             break;
                     }
@@ -236,6 +239,7 @@ public class PlayQueueSession extends CallSessionManager {
 
         private MediaPlayer mediaPlayer;
         private Context context;
+        private ServerCommThread parent;
 
         interface MediaQueueEmptyCallback {
             public void mediaQueueEmpty();
@@ -247,6 +251,11 @@ public class PlayQueueSession extends CallSessionManager {
 
         private void play(String str) {
             try {
+
+                if ("shutdown".equals(str)) {
+                    parent.killComm();
+                }
+
                 int soundID = context.getResources().getIdentifier(str, "raw", "sk.ksp.callcentrum");
 
                 if (soundID == 0) {
@@ -277,10 +286,11 @@ public class PlayQueueSession extends CallSessionManager {
             }
         }
 
-        public MediaQueue(MediaQueueEmptyCallback mqeCallback, Context context) {
+        public MediaQueue(MediaQueueEmptyCallback mqeCallback, Context context, ServerCommThread parent) {
             media = new ConcurrentLinkedQueue<String>();
             this.mqeCallback = mqeCallback;
             this.context = context;
+            this.parent = parent;
         }
 
         public void push(String sound) {
