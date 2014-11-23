@@ -65,14 +65,15 @@
                         android:fontFamily="@string/search_font_family"
                         android:textColor="@color/searchbox_text_color"
                         android:textColorHint="@color/searchbox_hint_text_color"
-                        android:inputType="textFilter"/>
+                        android:inputType="textFilter"
+                        android:focusable="false"/>
                     <ImageView
                         android:id="@+id/search_close_button"
                         android:layout_height="@dimen/search_box_icon_size"
                         android:layout_width="@dimen/search_box_icon_size"
                         android:padding="6dp"
                         android:src="@drawable/ic_close_dk"
-                        android:clickable="true"
+                        android:clickable="false"
                         android:background="?android:attr/selectableItemBackground"
                         android:contentDescription="@string/description_clear_search"
                         android:visibility="gone" />
@@ -82,9 +83,10 @@
                         android:layout_width="@dimen/search_box_icon_size"
                         android:padding="@dimen/search_box_icon_padding"
                         android:src="@drawable/ic_voice_search"
-                        android:clickable="true"
+                        android:clickable="false"
                         android:contentDescription="@string/description_start_voice_search"
-                        android:background="?android:attr/selectableItemBackground" />
+                        android:background="?android:attr/selectableItemBackground"
+                        android:focusable="false" />
                 </LinearLayout>
                 <FrameLayout
                     android:layout_width="match_parent"

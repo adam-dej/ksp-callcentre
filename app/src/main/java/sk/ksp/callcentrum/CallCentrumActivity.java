@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -37,7 +36,6 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -225,6 +223,7 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
                     mSearchView.setText("");
                 }
                 break;
+            /*
             case R.id.voice_search_button:
                 try {
                     startActivityForResult(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH),
@@ -234,6 +233,7 @@ public class CallCentrumActivity extends Activity implements View.OnClickListene
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
+            */
             default: {
                 Log.wtf(TAG, "Unexpected onClick event from " + view);
                 break;
