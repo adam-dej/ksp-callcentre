@@ -341,6 +341,7 @@ public class PlayQueueSession extends CallSessionManager {
             @Override
             public void run() {
                 try {
+                    uiHandler.obtainMessage(MESSAGE_HIDE_DIALPAD).sendToTarget();
                     uiHandler.obtainMessage(MESSAGE_SHOW_PROVIDER_INFO,
                             resources.getString(R.string.ksp_network)).sendToTarget();
                     uiHandler.obtainMessage(MESSAGE_SHOW_MESSAGEBAR,
@@ -361,6 +362,7 @@ public class PlayQueueSession extends CallSessionManager {
             @Override
             public void run() {
                 try {
+                    uiHandler.obtainMessage(MESSAGE_HIDE_DIALPAD).sendToTarget();
                     uiHandler.obtainMessage(MESSAGE_SHOW_MESSAGEBAR, message).sendToTarget();
                     Thread.sleep(3000);
                     uiHandler.obtainMessage(MESSAGE_DIE).sendToTarget();
