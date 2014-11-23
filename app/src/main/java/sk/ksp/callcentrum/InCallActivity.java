@@ -204,7 +204,7 @@ public class InCallActivity extends Activity
             return;
         }
 
-        super.onBackPressed();
+        callSessionManager.onButtonClick(R.id.endButton);
     }
 
     /**

@@ -30,7 +30,7 @@ android {
             versionCode 1
             versionName '1.0-druzinka1'
             buildConfigField 'String', 'druzinkaName', '"1"'
-            buildConfigField 'String', 'serverAddress', '"192.168.0.101:1234"'
+            buildConfigField 'String', 'serverAddress', '"192.168.2.50:1234"'
         }
         druzinka2 {
             minSdkVersion 16
@@ -39,7 +39,7 @@ android {
             versionCode 1
             versionName '1.0-druzinka2'
             buildConfigField 'String', 'druzinkaName', '"2"'
-            buildConfigField 'String', 'serverAddress', '"192.168.0.101:1234"'
+            buildConfigField 'String', 'serverAddress', '"192.168.2.50:1234"'
         }
         druzinka3 {
             minSdkVersion 16
@@ -48,7 +48,7 @@ android {
             versionCode 1
             versionName '1.0-druzinka3'
             buildConfigField 'String', 'druzinkaName', '"3"'
-            buildConfigField 'String', 'serverAddress', '"192.168.0.101:1234"'
+            buildConfigField 'String', 'serverAddress', '"192.168.2.50:1234"'
         }
         druzinka4 {
             minSdkVersion 16
@@ -57,7 +57,7 @@ android {
             versionCode 1
             versionName '1.0-druzinka4'
             buildConfigField 'String', 'druzinkaName', '"4"'
-            buildConfigField 'String', 'serverAddress', '"192.168.0.101:1234"'
+            buildConfigField 'String', 'serverAddress', '"192.168.2.50:1234"'
         }
     }
 }
