@@ -57,9 +57,9 @@ public class InCallTouchUi extends FrameLayout
     private ImageButton mMergeButton;
     private ImageButton mEndButton;
     private CompoundButton mDialpadButton;
-    private CompoundButton mMuteButton;
-    private CompoundButton mAudioButton;
-    private CompoundButton mHoldButton;
+    private ImageButton mMuteButton;
+    private ImageButton mAudioButton;
+    private ImageButton mHoldButton;
     private ImageButton mSwapButton;
     private View mHoldSwapSpacer;
 
@@ -88,27 +88,27 @@ public class InCallTouchUi extends FrameLayout
         // Regular (single-tap) buttons, where we listen for click events:
         // Main cluster of buttons:
         mAddButton = (ImageButton) mInCallControls.findViewById(R.id.addButton);
-        mAddButton.setOnClickListener(this);
+//        mAddButton.setOnClickListener(this);
         mAddButton.setOnLongClickListener(this);
         mMergeButton = (ImageButton) mInCallControls.findViewById(R.id.mergeButton);
-        mMergeButton.setOnClickListener(this);
+//        mMergeButton.setOnClickListener(this);
         mMergeButton.setOnLongClickListener(this);
         mEndButton = (ImageButton) mInCallControls.findViewById(R.id.endButton);
         mEndButton.setOnClickListener(this);
         mDialpadButton = (CompoundButton) mInCallControls.findViewById(R.id.dialpadButton);
         mDialpadButton.setOnClickListener(this);
         mDialpadButton.setOnLongClickListener(this);
-        mMuteButton = (CompoundButton) mInCallControls.findViewById(R.id.muteButton);
-        mMuteButton.setOnClickListener(this);
+        mMuteButton = (ImageButton) mInCallControls.findViewById(R.id.muteButton);
+//        mMuteButton.setOnClickListener(this);
         mMuteButton.setOnLongClickListener(this);
-        mAudioButton = (CompoundButton) mInCallControls.findViewById(R.id.audioButton);
-        mAudioButton.setOnClickListener(this);
+        mAudioButton = (ImageButton) mInCallControls.findViewById(R.id.audioButton);
+//        mAudioButton.setOnClickListener(this);
         mAudioButton.setOnLongClickListener(this);
-        mHoldButton = (CompoundButton) mInCallControls.findViewById(R.id.holdButton);
-        mHoldButton.setOnClickListener(this);
+        mHoldButton = (ImageButton) mInCallControls.findViewById(R.id.holdButton);
+//        mHoldButton.setOnClickListener(this);
         mHoldButton.setOnLongClickListener(this);
         mSwapButton = (ImageButton) mInCallControls.findViewById(R.id.swapButton);
-        mSwapButton.setOnClickListener(this);
+//        mSwapButton.setOnClickListener(this);
         mSwapButton.setOnLongClickListener(this);
         mHoldSwapSpacer = mInCallControls.findViewById(R.id.holdSwapSpacer);
 
@@ -180,16 +180,16 @@ public class InCallTouchUi extends FrameLayout
 
         // "Mute"
         mMuteButton.setEnabled(true);
-        mMuteButton.setChecked(false); // TODO
+//        mMuteButton.setChecked(false); // TODO
 
         // "Audio"
         mAudioButton.setEnabled(true);
-        mAudioButton.setChecked(true); // They cannot change this
+//        mAudioButton.setChecked(true); // They cannot change this
         updateAudioButton(); // TODO state
 
         mHoldButton.setVisibility(View.VISIBLE);
         mHoldButton.setEnabled(true);
-        mHoldButton.setChecked(false); // TODO
+//        mHoldButton.setChecked(false); // TODO
         mSwapButton.setVisibility(View.GONE);
         mHoldSwapSpacer.setVisibility(View.VISIBLE);
 

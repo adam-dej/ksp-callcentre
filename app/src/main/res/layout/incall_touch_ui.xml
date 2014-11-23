@@ -119,10 +119,12 @@
                      action button that brings up a popup menu; see
                      btn_compound_audio.xml and InCallTouchUi.updateAudioButton()
                      for the full details. -->
-                <ToggleButton android:id="@+id/audioButton"
+                <ImageButton android:id="@+id/audioButton"
                     style="@style/InCallCompoundButton"
                     android:background="@drawable/btn_compound_audio"
                     android:contentDescription="@string/onscreenAudioText"
+                    android:enabled="false"
+                    android:clickable="false"
                     />
 
                 <!-- Separator between 2nd and 3rd button -->
@@ -130,10 +132,12 @@
 
                 <!-- "Mute" -->
                 <!-- This is a "compound button": it has checked and unchecked states. -->
-                <ToggleButton android:id="@+id/muteButton"
+                <ImageButton android:id="@+id/muteButton"
                     style="@style/InCallCompoundButton"
                     android:background="@drawable/btn_compound_mute"
                     android:contentDescription="@string/onscreenMuteText"
+                    android:enabled="false"
+                    android:clickable="false"
                     />
 
                 <!-- Separator between 3rd and 4th button -->
@@ -144,16 +148,19 @@
                      must always be set to GONE. -->
                 <!-- "Hold" -->
                 <!-- This is a "compound button": it has checked and unchecked states. -->
-                <ToggleButton android:id="@+id/holdButton"
+                <ImageButton android:id="@+id/holdButton"
                     style="@style/InCallCompoundButton"
                     android:background="@drawable/btn_compound_hold"
                     android:contentDescription="@string/onscreenHoldText"
+                    android:enabled="false"
+                    android:clickable="false"
                     />
                 <!-- "Swap" (or "Manage calls" in some CDMA states) -->
                 <ImageButton android:id="@+id/swapButton"
                     style="@style/InCallButton"
                     android:src="@drawable/ic_incall_switch_holo_dark"
                     android:contentDescription="@string/onscreenSwapCallsText"
+                    android:enabled="false"
                     />
 
                 <!-- Separator between 4th and 5th button (if 5th exists) -->
@@ -168,6 +175,8 @@
                     style="@style/InCallButton"
                     android:src="@drawable/ic_add_contact_holo_dark"
                     android:contentDescription="@string/onscreenAddCallText"
+                    android:enabled="false"
+                    android:clickable="false"
                     />
                 <!-- "Merge calls" -->
                 <!-- This button is used only on GSM devices, where we know
@@ -177,6 +186,7 @@
                     style="@style/InCallButton"
                     android:src="@drawable/ic_merge_holo_dark"
                     android:contentDescription="@string/onscreenMergeCallsText"
+                    android:enabled="false"
                     />
 
                 <!-- Separator between 4th (or 5th) button and right padding -->
