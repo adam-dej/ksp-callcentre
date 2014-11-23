@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -248,9 +247,15 @@ public class PlayQueueSession extends CallSessionManager {
 
         private void play(String str) {
             try {
-                Class res = R.raw.class;
-                Field field = res.getField(str);
-                int soundID = field.getInt(null);
+                int soundID = context.getResources().getIdentifier(str, "raw", "sk.ksp.callcentrum");
+
+                if (soundID == 0) {
+                    if (BuildConfig.DEBUG) {
+                        Log.w("MediaQueue", "Sound does not exist: " + str + "!");
+                    }
+                    onCompletion(null);
+                    return;
+                }
 
                 if (mediaPlayer == null) {
                     mediaPlayer = new MediaPlayer();
@@ -267,17 +272,6 @@ public class PlayQueueSession extends CallSessionManager {
                 }
                 mediaPlayer.start();
                 afd.close();
-            }
-            catch (NoSuchFieldException e) {
-                if (BuildConfig.DEBUG) {
-                    Log.w("MediaQueue", "Sound does not exist: " + str + "! (" + e.toString() + ")");
-                }
-                onCompletion(null);
-            } catch (IllegalAccessException e) {
-                if (BuildConfig.DEBUG) {
-                    Log.w("MediaQueue", "Sound does not exist: " + str + "! (" + e.toString() + ")");
-                }
-                onCompletion(null);
             } catch (IOException e) {
                 Log.wtf("MediaQueue", e.toString());
             }
